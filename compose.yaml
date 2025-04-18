@@ -1,0 +1,30 @@
+services:
+  node:
+    image: "node:23.11"
+    user: "node"
+    working_dir: /home/node/app
+    environment:
+      NODE_ENV: development
+      POSTGRES_PASSWORD: test
+      POSTGRES_USER: my-user
+      POSTGRES_DB: authentication-api
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+    volumes:
+      - ./:/home/node/app
+    ports:
+      - "8080:8080"
+    command: "npm start"
+    depends_on:
+      - db
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: test
+      POSTGRES_USER: my-user
+      POSTGRES_DB: authentication-api
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
