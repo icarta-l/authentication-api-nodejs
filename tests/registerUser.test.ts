@@ -1,5 +1,16 @@
-import {beforeAll, afterAll, describe, expect, it, test} from '@jest/globals';
+import {afterAll, describe, expect, test} from '@jest/globals';
 import axios from 'axios';
+
+const PostgreSQLDatabase = require("app.ts").PostgreSQLDatabase;
+const server = require("app.ts").server;
+
+afterAll(async() => {
+    const postgreSQLDatabase = PostgreSQLDatabase.getInstance();
+    await postgreSQLDatabase.connect();
+    await postgreSQLDatabase.query("TRUNCATE TABLE application_users");
+    await postgreSQLDatabase.close();
+    await server.close();
+});
 
 describe("POST to register route", () => {
     test("should return a 201 HTTP response", async () => {
@@ -7,8 +18,8 @@ describe("POST to register route", () => {
             username: "UserTest",
             email: "test@gmail.com",
             password: "my Test password1",
-            firstName: "Lorem",
-            lastName: "Ipsum"
+            firstname: "Lorem",
+            lastname: "Ipsum"
         })
         expect(response.status).toEqual(201);
     })
