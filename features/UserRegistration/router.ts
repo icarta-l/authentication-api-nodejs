@@ -8,7 +8,7 @@ const userRegistrationRouter: Router = express.Router();
 const jsonParser: NextHandleFunction = bodyParser.json();
 
 userRegistrationRouter.post("/", jsonParser, async (request: Request, response: Response) => {
-    const postgreSQLDatabase: typeof PostgreSQLDatabase = PostgreSQLDatabase.getInstance();
+    const postgreSQLDatabase: PostgreSQLDatabase = PostgreSQLDatabase.getInstance();
     await postgreSQLDatabase.connect();
     const userRegistered: boolean = await postgreSQLDatabase.registerUser(request.body.email, request.body.username, request.body.password, request.body.firstname, request.body.lastname);
     await postgreSQLDatabase.close();

@@ -1,10 +1,9 @@
-import type { QueryResult } from "pg";
+import type { QueryResult, Client } from "pg";
+import pg from "pg";
+import argon2 from "argon2";
 
-const Client = require("pg").Client;
-const argon2 = require("argon2");
-
-module.exports.default = class PostgreSQLDatabase {
-    private client: typeof Client;
+export default class PostgreSQLDatabase {
+    private client!: Client;
     private static instance: PostgreSQLDatabase;
     private isConnected: boolean = false;
 
@@ -20,12 +19,12 @@ module.exports.default = class PostgreSQLDatabase {
     public async connect(): Promise<void> 
     {
         if (this.isConnected === false) {
-            this.client = new Client({
+            this.client = new pg.Client({
                 user: process.env.POSTGRES_USER,
                 host: process.env.POSTGRES_HOST,
                 database: process.env.POSTGRES_DB,
                 password: process.env.POSTGRES_PASSWORD,
-                port: process.env.POSTGRES_PORT
+                port: Number(process.env.POSTGRES_PORT)
             });
             await this.client.connect();
             this.isConnected = true;

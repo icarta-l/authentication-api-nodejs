@@ -1,7 +1,7 @@
 import {afterAll, describe, expect, test} from '@jest/globals';
 import axios from 'axios';
 
-const PostgreSQLDatabase = require("app.ts").PostgreSQLDatabase;
+const PostgreSQLDatabase = require("app.ts").PostgreSQLDatabase.default;
 const server = require("app.ts").server;
 
 afterAll(async() => {
