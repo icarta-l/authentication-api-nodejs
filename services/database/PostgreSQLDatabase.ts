@@ -1,6 +1,5 @@
-import type { QueryResult, Client } from "pg";
+import type { Client } from "pg";
 import pg from "pg";
-import argon2 from "argon2";
 
 export default class PostgreSQLDatabase {
     private client!: Client;
@@ -28,21 +27,6 @@ export default class PostgreSQLDatabase {
             });
             await this.client.connect();
             this.isConnected = true;
-        }
-    }
-
-    public async registerUser(email: string, username: string, password: string, firstname: string|false = false, lastname: string|false = false): Promise<boolean>
-    {
-        const hashedPassword: string = await argon2.hash(password);
-        const queryResult: QueryResult|undefined = await this.client.query(
-            "INSERT INTO application_users (email, username, password, firstname, lastname) VALUES ($1, $2, $3, $4, $5)",
-            [email, username, hashedPassword, firstname, lastname]
-        ); 
-
-        if (queryResult !== undefined && queryResult.rowCount !== null && queryResult.rowCount > 0) {
-            return true;
-        } else {
-            return false;
         }
     }
 

@@ -4,11 +4,11 @@ import bodyParser from 'body-parser';
 import type { NextHandleFunction } from "connect";
 import PostgreSQLDatabase from "./database/PostgreSQLDatabase";
 
-const userRegistrationRouter: Router = express.Router();
+const UserRegistrationRouter: Router = express.Router();
 const jsonParser: NextHandleFunction = bodyParser.json();
 
-userRegistrationRouter.post("/", jsonParser, async (request: Request, response: Response) => {
-    const postgreSQLDatabase: PostgreSQLDatabase = PostgreSQLDatabase.getInstance();
+UserRegistrationRouter.post("/", jsonParser, async (request: Request, response: Response) => {
+    const postgreSQLDatabase: PostgreSQLDatabase = new PostgreSQLDatabase();
     await postgreSQLDatabase.connect();
     const userRegistered: boolean = await postgreSQLDatabase.registerUser(request.body.email, request.body.username, request.body.password, request.body.firstname, request.body.lastname);
     await postgreSQLDatabase.close();
@@ -22,4 +22,4 @@ userRegistrationRouter.post("/", jsonParser, async (request: Request, response: 
     }
 });
 
-module.exports = userRegistrationRouter;
+export { UserRegistrationRouter }
