@@ -1,10 +1,11 @@
-import express, { Request, Response, Router } from 'express';
+import express from 'express';
+import type { Request, Response, Router } from 'express';
 import bodyParser from 'body-parser';
-import { NextHandleFunction } from 'connect';
+import type { NextHandleFunction } from "connect";
+import PostgreSQLDatabase from "./database/PostgreSQLDatabase";
 
 const userRegistrationRouter: Router = express.Router();
 const jsonParser: NextHandleFunction = bodyParser.json();
-const PostgreSQLDatabase = require("./features/UserRegistration/database/PostgreSQLDatabase.ts");
 
 userRegistrationRouter.post("/", jsonParser, async (request: Request, response: Response) => {
     const postgreSQLDatabase: typeof PostgreSQLDatabase = PostgreSQLDatabase.getInstance();

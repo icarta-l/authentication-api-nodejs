@@ -3,7 +3,7 @@ import type { QueryResult } from "pg";
 const Client = require("pg").Client;
 const argon2 = require("argon2");
 
-module.exports = class PostgreSQLDatabase {
+module.exports.default = class PostgreSQLDatabase {
     private client: typeof Client;
     private static instance: PostgreSQLDatabase;
     private isConnected: boolean = false;
