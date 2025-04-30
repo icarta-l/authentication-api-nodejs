@@ -1,7 +1,7 @@
 import RegisterUserRequest from "./RegisterUserRequest";
 import RegisterUserResponse from "./RegisterUserResponse";
 
-export class RegisterUserController
+export default class RegisterUserController
 {
     public handleRegisterUserRequest(registerUserRequest: RegisterUserRequest): RegisterUserResponse
     {   

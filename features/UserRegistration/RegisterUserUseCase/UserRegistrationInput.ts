@@ -1,5 +1,4 @@
-export default class RegisterUserRequest 
-{
+export default class UserRegistrationInput {
     private username!: string;
     private email!: string;
     private password!: string;
@@ -11,7 +10,7 @@ export default class RegisterUserRequest
         return this.username;
     }
 
-    public setUsername(username: string): RegisterUserRequest
+    public setUsername(username: string): UserRegistrationInput
     {
         this.username = username;
 
@@ -23,7 +22,7 @@ export default class RegisterUserRequest
         return this.email;
     }
 
-    public setEmail(email: string): RegisterUserRequest
+    public setEmail(email: string): UserRegistrationInput
     {
         this.email = email;
 
@@ -35,19 +34,19 @@ export default class RegisterUserRequest
         return this.password;
     }
 
-    public setPassword(password: string): RegisterUserRequest
+    public setPassword(password: string): UserRegistrationInput
     {
         this.password = password;
 
         return this;
     }
-
+    
     public getFirstName(): string
     {
         return this.firstName;
     }
 
-    public setFirstName(firstName: string): RegisterUserRequest
+    public setFirstName(firstName: string): UserRegistrationInput
     {
         this.firstName = firstName;
 
@@ -59,7 +58,7 @@ export default class RegisterUserRequest
         return this.lastName;
     }
 
-    public setLastName(lastName: string): RegisterUserRequest
+    public setLastName(lastName: string): UserRegistrationInput
     {
         this.lastName = lastName;
 
