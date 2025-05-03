@@ -1,18 +1,27 @@
 import {afterAll, describe, expect, test} from '@jest/globals';
-import PostgreSQLDatabase from "../../../services/database/PostgreSQLDatabase";
+import UserRegistrationOnPostgreSQLDatabase from "../RegisterUserMain/database/UserRegistrationOnPostgreSQLDatabase";
 import RegisterUserController from '../RegisterUserController/RegisterUserController';
 import RegisterUserRequest from '../RegisterUserController/RegisterUserRequest';
 import type RegisterUserResponse from '../RegisterUserController/RegisterUserResponse';
+import BadRequestError from '../../../services/errors/BadRequestError';
 
 afterAll(async() => {
-    const postgreSQLDatabase = PostgreSQLDatabase.getInstance();
-    await postgreSQLDatabase.connect();
-    await postgreSQLDatabase.query("TRUNCATE TABLE application_users");
-    await postgreSQLDatabase.close();
+    const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
+    await userRegistrationOnPostgreSQLDatabase.query("TRUNCATE TABLE application_users");
+    await userRegistrationOnPostgreSQLDatabase.close();
 });
 
+const retrieveUserRegistrationOnPostgreSQLDatabase = async (): Promise<UserRegistrationOnPostgreSQLDatabase> => {
+    const userRegistrationOnPostgreSQLDatabase = new UserRegistrationOnPostgreSQLDatabase();
+    await userRegistrationOnPostgreSQLDatabase.connect();
+
+    return userRegistrationOnPostgreSQLDatabase;
+}
+
 describe("Test register user feature", () => {
-    test("Can register a new user", () => {
+    test("Can register a new user", async () => {
+        const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
+
         const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
         registerUserRequest.setUsername("user")
         .setEmail("test@mail.com")
@@ -21,8 +30,19 @@ describe("Test register user feature", () => {
         .setLastName("Bobby");
 
         const registerUserController: RegisterUserController = new RegisterUserController();
-        const registerUserResponse: RegisterUserResponse = registerUserController.handleRegisterUserRequest(registerUserRequest);
+        const registerUserResponse: RegisterUserResponse = await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase);
 
         expect(registerUserResponse.userIsRegistered()).toBe(true);
-    })
+    });
+
+    test("Cannot register a user without a username", async () => {
+        const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
+
+        const misformedRequest = () => {
+            registerUserRequest.setUsername("")
+        }
+
+        expect(misformedRequest).toThrow(BadRequestError);
+        expect(misformedRequest).toThrow("User cannot register without a username");
+    });
 });

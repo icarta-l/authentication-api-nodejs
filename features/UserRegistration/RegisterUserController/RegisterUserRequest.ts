@@ -1,3 +1,5 @@
+import BadRequestError from "../../../services/errors/BadRequestError";
+
 export default class RegisterUserRequest 
 {
     private username!: string;
@@ -13,6 +15,10 @@ export default class RegisterUserRequest
 
     public setUsername(username: string): RegisterUserRequest
     {
+        if (username.length === 0) {
+            throw new BadRequestError("User cannot register without a username");
+        }
+        
         this.username = username;
 
         return this;

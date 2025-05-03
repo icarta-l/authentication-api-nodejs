@@ -35,4 +35,9 @@ export default class UserRegistrationOnPostgreSQLDatabase implements RegisterUse
     {
         this.postgreSQLDatabase.close();
     }
+
+    public async query(query: string, values?: Array<any>): Promise<any>
+    {
+        return await this.postgreSQLDatabase.query(query, values);
+    }
 }

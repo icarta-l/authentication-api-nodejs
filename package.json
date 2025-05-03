@@ -4,7 +4,7 @@
   "description": "Basic Authentication API",
   "main": "app.js",
   "scripts": {
-    "test": "NODE_PATH=. jest --detectOpenHandles",
+    "test": "NODE_PATH=. jest --watchAll --no-cache --detectOpenHandles",
     "start": "nodemon app.js"
   },
   "author": "Idan Carta-Lag",
