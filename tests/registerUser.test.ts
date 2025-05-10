@@ -81,4 +81,19 @@ describe("POST to register route", () => {
         })
         expect(response.status).toEqual(201);
     });
+
+    test("username without letters should return a 403 HTTP response", async () => {
+        axios.post(registerEndpoint, {
+            username: "1234",
+            email: "test3@gmail.com",
+            password: "my Test password1",
+            firstName: "Lorem",
+            lastName: "Ipsum"
+        })
+        .catch((error) => {
+            if (error.response) {
+                expect(error.response.status).toEqual(403);
+            }
+        })
+    });
 });

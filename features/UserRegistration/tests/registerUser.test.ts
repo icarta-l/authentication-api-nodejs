@@ -4,6 +4,8 @@ import RegisterUserController from '../RegisterUserController/RegisterUserContro
 import RegisterUserRequest from '../RegisterUserController/RegisterUserRequest';
 import type RegisterUserResponse from '../RegisterUserController/RegisterUserResponse';
 import BadRequestError from '../../../services/errors/BadRequestError';
+import UnauthorisedActionError from '../../../services/errors/UnauthorisedActionError';
+import JoiValidation from "../RegisterUserMain/validation/JoiValidation";
 
 afterAll(async() => {
     const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
@@ -21,6 +23,7 @@ const retrieveUserRegistrationOnPostgreSQLDatabase = async (): Promise<UserRegis
 describe("Test register user feature", () => {
     test("Can register a new user", async () => {
         const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
+        const joiValidation: JoiValidation = new JoiValidation();
 
         const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
         registerUserRequest.setUsername("user")
@@ -30,7 +33,7 @@ describe("Test register user feature", () => {
         .setLastName("Bobby");
 
         const registerUserController: RegisterUserController = new RegisterUserController();
-        const registerUserResponse: RegisterUserResponse = await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase);
+        const registerUserResponse: RegisterUserResponse = await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
 
         expect(registerUserResponse.userIsRegistered()).toBe(true);
     });
@@ -70,6 +73,7 @@ describe("Test register user feature", () => {
 
     test("Can register a new user without first name or last name", async () => {
         const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
+        const joiValidation: JoiValidation = new JoiValidation();
 
         const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
         registerUserRequest.setUsername("user")
@@ -77,8 +81,50 @@ describe("Test register user feature", () => {
         .setPassword("Sdf sdfs sdfsdfi 1234 !");
 
         const registerUserController: RegisterUserController = new RegisterUserController();
-        const registerUserResponse: RegisterUserResponse = await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase);
+        const registerUserResponse: RegisterUserResponse = await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
 
         expect(registerUserResponse.userIsRegistered()).toBe(true);
+    });
+
+    test("Username needs to have at least 3 letters", async () => {
+        const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
+        const joiValidation: JoiValidation = new JoiValidation();
+
+        const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
+        registerUserRequest.setUsername("1234")
+        .setEmail("test@mail.com")
+        .setPassword("Sdf sdfs sdfsdfi 1234 !")
+        .setFirstName("Bob")
+        .setLastName("Bobby");
+
+        const registerUserController: RegisterUserController = new RegisterUserController();
+
+        const requestWithNumericalUsername = async () => {
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+        }
+
+        await expect(requestWithNumericalUsername()).rejects.toThrow(UnauthorisedActionError);
+        await expect(requestWithNumericalUsername()).rejects.toThrow("Username needs to have at least 3 letters");
+    });
+
+    test("Username needs to be only letters, numbers and underscores", async () => {
+        const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
+        const joiValidation: JoiValidation = new JoiValidation();
+
+        const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
+        registerUserRequest.setUsername("asdb!#asdf")
+        .setEmail("test@mail.com")
+        .setPassword("Sdf sdfs sdfsdfi 1234 !")
+        .setFirstName("Bob")
+        .setLastName("Bobby");
+
+        const registerUserController: RegisterUserController = new RegisterUserController();
+
+        const requestWithNumericalUsername = async () => {
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+        }
+
+        await expect(requestWithNumericalUsername()).rejects.toThrow(UnauthorisedActionError);
+        await expect(requestWithNumericalUsername()).rejects.toThrow("Username can only contain letters, numbers and underscores");
     });
 });

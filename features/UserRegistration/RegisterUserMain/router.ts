@@ -7,7 +7,8 @@ import RegisterUserController from '../RegisterUserController/RegisterUserContro
 import RegisterUserRequest from '../RegisterUserController/RegisterUserRequest';
 import type RegisterUserResponse from '../RegisterUserController/RegisterUserResponse';
 import BadRequestError from '../../../services/errors/BadRequestError';
-import { escape } from 'querystring';
+import UnauthorisedActionError from '../../../services/errors/UnauthorisedActionError';
+import JoiValidation from './validation/JoiValidation';
 
 const UserRegistrationRouter: Router = express.Router();
 const jsonParser: NextHandleFunction = bodyParser.json();
@@ -15,11 +16,12 @@ const jsonParser: NextHandleFunction = bodyParser.json();
 UserRegistrationRouter.post("/", jsonParser, async (request: Request, response: Response) => {
     try {
         const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = new UserRegistrationOnPostgreSQLDatabase();
+        const joiValidation: JoiValidation = new JoiValidation();
 
         const [, registerUserRequest] = await Promise.all([userRegistrationOnPostgreSQLDatabase.connect(), composeRegisterUserRequest(request.body)]);
 
         const registerUserController: RegisterUserController = new RegisterUserController();
-        const registerUserResponse: RegisterUserResponse = await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase);
+        const registerUserResponse: RegisterUserResponse = await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
 
         await userRegistrationOnPostgreSQLDatabase.close();
 
@@ -34,6 +36,9 @@ UserRegistrationRouter.post("/", jsonParser, async (request: Request, response: 
     } catch(error) {
         if (error instanceof BadRequestError) {
             response.status(422)
+            .json(error.getMessage());
+        } else if(error instanceof UnauthorisedActionError) {
+            response.status(403)
             .json(error.getMessage());
         } else {
             throw error;
