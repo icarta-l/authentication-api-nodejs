@@ -31,6 +31,10 @@ export default class RegisterUserRequest
 
     public setEmail(email: string): RegisterUserRequest
     {
+        if (email.length === 0) {
+            throw new BadRequestError("User cannot register without an email");
+        }
+
         this.email = email;
 
         return this;
@@ -43,6 +47,10 @@ export default class RegisterUserRequest
 
     public setPassword(password: string): RegisterUserRequest
     {
+        if (password.length === 0) {
+            throw new BadRequestError("User cannot register without a password");
+        }
+
         this.password = password;
 
         return this;

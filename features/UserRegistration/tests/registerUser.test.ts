@@ -45,4 +45,40 @@ describe("Test register user feature", () => {
         expect(misformedRequest).toThrow(BadRequestError);
         expect(misformedRequest).toThrow("User cannot register without a username");
     });
+
+    test("Cannot register a user without a password", async () => {
+        const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
+
+        const misformedRequest = () => {
+            registerUserRequest.setPassword("")
+        }
+
+        expect(misformedRequest).toThrow(BadRequestError);
+        expect(misformedRequest).toThrow("User cannot register without a password");
+    });
+
+    test("Cannot register a user without an email", async () => {
+        const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
+
+        const misformedRequest = () => {
+            registerUserRequest.setEmail("")
+        }
+
+        expect(misformedRequest).toThrow(BadRequestError);
+        expect(misformedRequest).toThrow("User cannot register without an email");
+    });
+
+    test("Can register a new user without first name or last name", async () => {
+        const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
+
+        const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
+        registerUserRequest.setUsername("user")
+        .setEmail("test2@mail.com")
+        .setPassword("Sdf sdfs sdfsdfi 1234 !");
+
+        const registerUserController: RegisterUserController = new RegisterUserController();
+        const registerUserResponse: RegisterUserResponse = await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase);
+
+        expect(registerUserResponse.userIsRegistered()).toBe(true);
+    });
 });

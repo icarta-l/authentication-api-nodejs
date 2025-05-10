@@ -20,8 +20,8 @@ describe("POST to register route", () => {
             username: "UserTest",
             email: "test@gmail.com",
             password: "my Test password1",
-            firstname: "Lorem",
-            lastname: "Ipsum"
+            firstName: "Lorem",
+            lastName: "Ipsum"
         })
         expect(response.status).toEqual(201);
     });
@@ -31,13 +31,54 @@ describe("POST to register route", () => {
             username: "",
             email: "test@gmail.com",
             password: "my Test password1",
-            firstname: "Lorem",
-            lastname: "Ipsum"
+            firstName: "Lorem",
+            lastName: "Ipsum"
         })
         .catch((error) => {
             if (error.response) {
                 expect(error.response.status).toEqual(422);
             }
         })
+    });
+
+    test("empty password field returns a 422 HTTP response", async () => {
+        axios.post(registerEndpoint, {
+            username: "UserTest",
+            email: "test@gmail.com",
+            password: "",
+            firstName: "Lorem",
+            lastName: "Ipsum"
+        })
+        .catch((error) => {
+            if (error.response) {
+                expect(error.response.status).toEqual(422);
+            }
+        })
+    });
+
+    test("empty email field returns a 422 HTTP response", async () => {
+        axios.post(registerEndpoint, {
+            username: "UserTest",
+            email: "",
+            password: "my Test password1",
+            firstName: "Lorem",
+            lastName: "Ipsum"
+        })
+        .catch((error) => {
+            if (error.response) {
+                expect(error.response.status).toEqual(422);
+            }
+        })
+    });
+
+    test("without a first name or a last name should return a 201 HTTP response", async () => {
+        const response = await axios.post(registerEndpoint, {
+            username: "UserTest",
+            email: "test2@gmail.com",
+            password: "my Test password1",
+            firstName: "Lorem",
+            lastName: "Ipsum"
+        })
+        expect(response.status).toEqual(201);
     });
 });
