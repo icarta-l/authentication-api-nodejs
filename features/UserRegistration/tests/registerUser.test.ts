@@ -120,11 +120,53 @@ describe("Test register user feature", () => {
 
         const registerUserController: RegisterUserController = new RegisterUserController();
 
-        const requestWithNumericalUsername = async () => {
+        const requestWithUnauthorisedSpecialCharacters = async () => {
             await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
         }
 
-        await expect(requestWithNumericalUsername()).rejects.toThrow(UnauthorisedActionError);
-        await expect(requestWithNumericalUsername()).rejects.toThrow("Username can only contain letters, numbers and underscores");
+        await expect(requestWithUnauthorisedSpecialCharacters()).rejects.toThrow(UnauthorisedActionError);
+        await expect(requestWithUnauthorisedSpecialCharacters()).rejects.toThrow("Username can only contain letters, numbers and underscores");
+    });
+
+    test("Email must be valid", async () => {
+        const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
+        const joiValidation: JoiValidation = new JoiValidation();
+
+        const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
+        registerUserRequest.setUsername("user")
+        .setEmail("test@mail.c")
+        .setPassword("Sdf sdfs sdfsdfi 1234 !")
+        .setFirstName("Bob")
+        .setLastName("Bobby");
+
+        const registerUserController: RegisterUserController = new RegisterUserController();
+
+        const requestWithInvalidEmail = async () => {
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+        }
+
+        await expect(requestWithInvalidEmail()).rejects.toThrow(UnauthorisedActionError);
+        await expect(requestWithInvalidEmail()).rejects.toThrow("Email must be valid");
+    });
+
+    test("Password should be at least 12 characters long", async () => {
+        const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
+        const joiValidation: JoiValidation = new JoiValidation();
+
+        const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
+        registerUserRequest.setUsername("user")
+        .setEmail("test@mail.com")
+        .setPassword("Sdf")
+        .setFirstName("Bob")
+        .setLastName("Bobby");
+
+        const registerUserController: RegisterUserController = new RegisterUserController();
+
+        const requestWithTooShortPassword = async () => {
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+        }
+
+        await expect(requestWithTooShortPassword()).rejects.toThrow(UnauthorisedActionError);
+        await expect(requestWithTooShortPassword()).rejects.toThrow("Password must be at least 12 characters long");
     });
 });

@@ -30,9 +30,9 @@ export default class RegisterUserController implements RegisterUserInput
         const userRegistrationInput = new UserRegistrationInput(userRegistrationInputValidator);
 
         await userRegistrationInput.setUsername(registerUserRequest.getUsername());
-        userRegistrationInput.setEmail(registerUserRequest.getEmail())
-        .setPassword(registerUserRequest.getPassword())
-        .setFirstName(registerUserRequest.getFirstName())
+        await userRegistrationInput.setEmail(registerUserRequest.getEmail());
+        await userRegistrationInput.setPassword(registerUserRequest.getPassword());
+        userRegistrationInput.setFirstName(registerUserRequest.getFirstName())
         .setLastName(registerUserRequest.getLastName());
 
         return userRegistrationInput;
