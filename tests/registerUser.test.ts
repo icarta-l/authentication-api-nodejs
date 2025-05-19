@@ -19,7 +19,7 @@ describe("POST to register route", () => {
         const response = await axios.post(registerEndpoint, {
             username: "UserTest",
             email: "test@gmail.com",
-            password: "my Test password1",
+            password: "my Test pas SDF23sword1",
             firstName: "Lorem",
             lastName: "Ipsum"
         })
@@ -75,7 +75,7 @@ describe("POST to register route", () => {
         const response = await axios.post(registerEndpoint, {
             username: "UserTest",
             email: "test2@gmail.com",
-            password: "my Test password1",
+            password: "my Test pasSDF234 sword1",
             firstName: "Lorem",
             lastName: "Ipsum"
         })

@@ -60,10 +60,37 @@ export default class UserRegistrationInput {
 
     public async setPassword(password: string): Promise<UserRegistrationInput>
     {
-        const passwordMustBeAtLeast12CharactersLong = await this.userRegistrationInputValidator.passwordMustBeAtLeast12CharactersLong(password);
+        const [passwordMustBeAtLeast12CharactersLong,
+            passwordMustHaveAtLeast3LowercaseLetters,
+            passwordMustHaveAtLeast3UppercaseLetters,
+            passwordMustHaveAtLeast3Symbols,
+            passwordMustHaveAtLeast3Numbers
+        ] = await Promise.all([
+            this.userRegistrationInputValidator.passwordMustBeAtLeast12CharactersLong(password),
+            this.userRegistrationInputValidator.passwordMustHaveAtLeast3LowercaseLetters(password),
+            this.userRegistrationInputValidator.passwordMustHaveAtLeast3UppercaseLetters(password),
+            this.userRegistrationInputValidator.passwordMustHaveAtLeast3Symbols(password),
+            this.userRegistrationInputValidator.passwordMustHaveAtLeast3Numbers(password)
+        ]);
 
         if (!passwordMustBeAtLeast12CharactersLong) {
             throw new UnauthorisedActionError("Password must be at least 12 characters long");
+        }
+
+        if (!passwordMustHaveAtLeast3LowercaseLetters) {
+            throw new UnauthorisedActionError("Password needs to have at least 3 lowercase letters");
+        }
+
+        if (!passwordMustHaveAtLeast3UppercaseLetters) {
+            throw new UnauthorisedActionError("Password needs to have at least 3 uppercase letters");
+        }
+
+        if (!passwordMustHaveAtLeast3Symbols) {
+            throw new UnauthorisedActionError("Password needs to have at least 3 symbols, special characters or space");
+        }
+
+        if (!passwordMustHaveAtLeast3Numbers) {
+            throw new UnauthorisedActionError("Password needs to have at least 3 numbers");
         }
 
         this.password = password;

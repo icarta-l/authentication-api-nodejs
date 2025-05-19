@@ -28,7 +28,7 @@ describe("Test register user feature", () => {
         const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
         registerUserRequest.setUsername("user")
         .setEmail("test@mail.com")
-        .setPassword("Sdf sdfs sdfsdfi 1234 !")
+        .setPassword("Sdf sdfs sdSDFdfi 1234 !")
         .setFirstName("Bob")
         .setLastName("Bobby");
 
@@ -78,7 +78,7 @@ describe("Test register user feature", () => {
         const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
         registerUserRequest.setUsername("user")
         .setEmail("test2@mail.com")
-        .setPassword("Sdf sdfs sdfsdfi 1234 !");
+        .setPassword("Sdf sdfs sdfsSDfSDdfi 1234 !");
 
         const registerUserController: RegisterUserController = new RegisterUserController();
         const registerUserResponse: RegisterUserResponse = await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
@@ -168,5 +168,89 @@ describe("Test register user feature", () => {
 
         await expect(requestWithTooShortPassword()).rejects.toThrow(UnauthorisedActionError);
         await expect(requestWithTooShortPassword()).rejects.toThrow("Password must be at least 12 characters long");
+    });
+
+    test("Password should have at least 3 lowercase letters", async () => {
+        const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
+        const joiValidation: JoiValidation = new JoiValidation();
+
+        const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
+        registerUserRequest.setUsername("user")
+        .setEmail("test@mail.com")
+        .setPassword("SDSDFSDFSDFSDF")
+        .setFirstName("Bob")
+        .setLastName("Bobby");
+
+        const registerUserController: RegisterUserController = new RegisterUserController();
+
+        const requestWithTooShortPassword = async () => {
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+        }
+
+        await expect(requestWithTooShortPassword()).rejects.toThrow(UnauthorisedActionError);
+        await expect(requestWithTooShortPassword()).rejects.toThrow("Password needs to have at least 3 lowercase letters");
+    });
+
+    test("Password should have at least 3 uppercase letters", async () => {
+        const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
+        const joiValidation: JoiValidation = new JoiValidation();
+
+        const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
+        registerUserRequest.setUsername("user")
+        .setEmail("test@mail.com")
+        .setPassword("asdfsadfsdfsdfasf")
+        .setFirstName("Bob")
+        .setLastName("Bobby");
+
+        const registerUserController: RegisterUserController = new RegisterUserController();
+
+        const requestWithTooShortPassword = async () => {
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+        }
+
+        await expect(requestWithTooShortPassword()).rejects.toThrow(UnauthorisedActionError);
+        await expect(requestWithTooShortPassword()).rejects.toThrow("Password needs to have at least 3 uppercase letters");
+    });
+
+    test("Password should have at least 3 symbols, special characters or space", async () => {
+        const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
+        const joiValidation: JoiValidation = new JoiValidation();
+
+        const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
+        registerUserRequest.setUsername("user")
+        .setEmail("test@mail.com")
+        .setPassword("SDfsdfsdfsFSDfsdfsfSdfSdf")
+        .setFirstName("Bob")
+        .setLastName("Bobby");
+
+        const registerUserController: RegisterUserController = new RegisterUserController();
+
+        const requestWithTooShortPassword = async () => {
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+        }
+
+        await expect(requestWithTooShortPassword()).rejects.toThrow(UnauthorisedActionError);
+        await expect(requestWithTooShortPassword()).rejects.toThrow("Password needs to have at least 3 symbols, special characters or space");
+    });
+
+    test("Password should have at least 3 numbers", async () => {
+        const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
+        const joiValidation: JoiValidation = new JoiValidation();
+
+        const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
+        registerUserRequest.setUsername("user")
+        .setEmail("test@mail.com")
+        .setPassword("SDfsdf sdfsFSDfs dfsfSd fSdf")
+        .setFirstName("Bob")
+        .setLastName("Bobby");
+
+        const registerUserController: RegisterUserController = new RegisterUserController();
+
+        const requestWithTooShortPassword = async () => {
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+        }
+
+        await expect(requestWithTooShortPassword()).rejects.toThrow(UnauthorisedActionError);
+        await expect(requestWithTooShortPassword()).rejects.toThrow("Password needs to have at least 3 numbers");
     });
 });
