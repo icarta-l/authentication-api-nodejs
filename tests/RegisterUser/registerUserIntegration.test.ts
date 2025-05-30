@@ -1,6 +1,6 @@
 import {afterAll, describe, expect, test} from '@jest/globals';
 import axios from 'axios';
-import PostgreSQLDatabase from "../services/database/PostgreSQLDatabase";
+import PostgreSQLDatabase from "../../services/database/PostgreSQLDatabase";
 import "dotenv/config";
 
 const server = require("app.ts").server;

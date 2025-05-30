@@ -1,10 +1,10 @@
 import express, { Express } from 'express';
-import {UserRegistrationRouter} from "./features/UserRegistration/RegisterUserMain/router";
+import {RegisterUserRouter} from "./features/RegisterUser/RegisterUserMain/router";
 
 const app: Express = express();
 const port: number = 8080;
 
-app.use("/register", UserRegistrationRouter);
+app.use("/register", RegisterUserRouter);
 
 const server = app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
