@@ -10,15 +10,16 @@ import BadRequestError from '../../../services/errors/BadRequestError';
 import UnauthorisedActionError from '../../../services/errors/UnauthorisedActionError';
 import JoiValidation from './validation/JoiValidation';
 
-const UserRegistrationRouter: Router = express.Router();
+const RegisterUserRouter: Router = express.Router();
 const jsonParser: NextHandleFunction = bodyParser.json();
 
-UserRegistrationRouter.post("/", jsonParser, async (request: Request, response: Response) => {
-    try {
-        const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = new UserRegistrationOnPostgreSQLDatabase();
-        const joiValidation: JoiValidation = new JoiValidation();
+RegisterUserRouter.post("/", jsonParser, async (request: Request, response: Response) => {
+    const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = new UserRegistrationOnPostgreSQLDatabase();
 
-        const [, registerUserRequest] = await Promise.all([userRegistrationOnPostgreSQLDatabase.connect(), composeRegisterUserRequest(request.body)]);
+    try {
+        const joiValidation: JoiValidation = new JoiValidation();
+        await userRegistrationOnPostgreSQLDatabase.connect();
+        const registerUserRequest = composeRegisterUserRequest(request.body);
 
         const registerUserController: RegisterUserController = new RegisterUserController();
         const registerUserResponse: RegisterUserResponse = await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
@@ -34,6 +35,8 @@ UserRegistrationRouter.post("/", jsonParser, async (request: Request, response: 
         }
         
     } catch(error) {
+        await userRegistrationOnPostgreSQLDatabase.close();
+
         if (error instanceof BadRequestError) {
             response.status(422)
             .json(error.getMessage());
@@ -61,4 +64,4 @@ const composeRegisterUserRequest = (requestBody: any): RegisterUserRequest => {
     return registerUserRequest;
 }
 
-export { UserRegistrationRouter }
+export { RegisterUserRouter }

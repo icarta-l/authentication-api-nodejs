@@ -4,10 +4,10 @@
   "description": "Basic Authentication API",
   "main": "app.js",
   "scripts": {
-    "test": "NODE_PATH=. jest --watchAll --no-cache --detectOpenHandles",
-    "test:action": "NODE_PATH=. jest --no-cache --detectOpenHandles --forceExit",
-    "start": "nodemon app.js",
-    "start:test": "node app.js",
+    "test-watch": "NODE_PATH=. jest --watchAll --no-cache --detectOpenHandles",
+    "test": "NODE_PATH=. jest --no-cache --detectOpenHandles --forceExit",
+    "start": "nodemon server.js",
+    "start:test": "node server.js",
     "typescript": "tsc"
   },
   "author": "Idan Carta-Lag",
@@ -27,6 +27,7 @@
     "@types/body-parser": "^1.19.5",
     "@types/connect": "^3.4.38",
     "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.14.1",
     "@types/pg": "^8.11.13",
     "@types/supertest": "^6.0.3",

@@ -1,6 +1,7 @@
 services:
   node:
-    image: "node:23.11"
+    build:
+      context: ./node-image
     user: "node"
     working_dir: /home/node/app
     environment:
@@ -17,6 +18,27 @@ services:
     command: "npm start"
     depends_on:
       - db
+
+  test-runner:
+    build:
+      context: ./node-image
+    user: "node"
+    working_dir: /home/node/app
+    environment:
+      NODE_ENV: development
+      POSTGRES_PASSWORD: test
+      POSTGRES_USER: my-user
+      POSTGRES_DB: authentication-api
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      JSONWEBTOKEN_SECRET_KEY: test-secret-key
+    volumes:
+      - ./:/home/node/app
+    command: "npm run test"
+    depends_on:
+      - node
+      - db
+
   db:
     image: postgres
     restart: always

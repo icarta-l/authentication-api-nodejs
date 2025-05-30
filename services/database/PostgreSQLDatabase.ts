@@ -4,7 +4,7 @@ import pg from "pg";
 export default class PostgreSQLDatabase {
     private client!: Client;
     private static instance: PostgreSQLDatabase;
-    private isConnected: boolean = false;
+    private _isConnected: boolean = false;
 
     public static getInstance(): PostgreSQLDatabase 
     {
@@ -17,7 +17,7 @@ export default class PostgreSQLDatabase {
 
     public async connect(): Promise<void> 
     {
-        if (this.isConnected === false) {
+        if (this._isConnected === false) {
             this.client = new pg.Client({
                 user: process.env.POSTGRES_USER,
                 host: process.env.POSTGRES_HOST,
@@ -26,7 +26,7 @@ export default class PostgreSQLDatabase {
                 port: Number(process.env.POSTGRES_PORT)
             });
             await this.client.connect();
-            this.isConnected = true;
+            this._isConnected = true;
         }
     }
 
@@ -37,9 +37,9 @@ export default class PostgreSQLDatabase {
 
     public async close(): Promise<void>
     {
-        if (this.isConnected === true) {
+        if (this._isConnected === true) {
             await this.client.end();
-            this.isConnected = false;
+            this._isConnected = false;
         }
     }
 }

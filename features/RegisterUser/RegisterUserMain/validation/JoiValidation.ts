@@ -4,7 +4,7 @@ import UserRegistrationInputValidator from "../../RegisterUserUseCase/UserRegist
 
 export default class JoiValidation implements UserRegistrationInputValidator
 {
-    private usernameHasAtLeastThreeLettersSchema: Schema;
+    private _usernameHasAtLeast3Letters: Schema;
     private _usernameHasOnlyLettersNumberAndUnderscores: Schema;
     private _emailMustBeValid: Schema;
     private _passwordMustBeAtLeast12CharactersLong: Schema;
@@ -15,7 +15,7 @@ export default class JoiValidation implements UserRegistrationInputValidator
 
     constructor()
     {
-        this.usernameHasAtLeastThreeLettersSchema = Joi.string().pattern(/(.*[a-z]{1}.*){3,}/);
+        this._usernameHasAtLeast3Letters = Joi.string().pattern(/(.*[a-z]{1}.*){3,}/);
         this._usernameHasOnlyLettersNumberAndUnderscores = Joi.string().pattern(/^[a-zA-Z_0-9]{1,}$/);
         this._emailMustBeValid = Joi.string().email();
         this._passwordMustBeAtLeast12CharactersLong = Joi.string().min(12);
@@ -28,7 +28,7 @@ export default class JoiValidation implements UserRegistrationInputValidator
     public async usernameHasAtLeat3Letters(username: string): Promise<boolean>
     {
         try {
-            await this.usernameHasAtLeastThreeLettersSchema.validateAsync(username);
+            await this._usernameHasAtLeast3Letters.validateAsync(username);
         } catch (error) {
             return false;
         }

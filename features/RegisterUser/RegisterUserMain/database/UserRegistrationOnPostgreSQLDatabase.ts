@@ -15,7 +15,7 @@ export default class UserRegistrationOnPostgreSQLDatabase implements RegisterUse
     {
         const hashedPassword: string = await argon2.hash(userRegistrationInput.getPassword());
         const queryResult: QueryResult|undefined = await this.postgreSQLDatabase.query(
-            "INSERT INTO application_users (email, username, password, firstname, lastname) VALUES ($1, $2, $3, $4, $5)",
+            "INSERT INTO application_users (email, username, password, first_name, last_name) VALUES ($1, $2, $3, $4, $5)",
             [userRegistrationInput.getEmail(), userRegistrationInput.getUsername(), hashedPassword, userRegistrationInput.getFirstName(), userRegistrationInput.getLastName()]
         ); 
 
@@ -28,12 +28,12 @@ export default class UserRegistrationOnPostgreSQLDatabase implements RegisterUse
 
     public async connect(): Promise<void> 
     {
-        this.postgreSQLDatabase.connect();
+        await this.postgreSQLDatabase.connect();
     }
 
     public async close(): Promise<void> 
     {
-        this.postgreSQLDatabase.close();
+        await this.postgreSQLDatabase.close();
     }
 
     public async query(query: string, values?: Array<any>): Promise<any>

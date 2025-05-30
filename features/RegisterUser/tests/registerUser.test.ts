@@ -76,7 +76,7 @@ describe("Test register user feature", () => {
         const joiValidation: JoiValidation = new JoiValidation();
 
         const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
-        registerUserRequest.setUsername("user")
+        registerUserRequest.setUsername("user2")
         .setEmail("test2@mail.com")
         .setPassword("Sdf sdfs sdfsSDfSDdfi 1234 !");
 
