@@ -10,10 +10,10 @@ import BadRequestError from '../../../services/errors/BadRequestError';
 import UnauthorisedActionError from '../../../services/errors/UnauthorisedActionError';
 import JoiValidation from './validation/JoiValidation';
 
-const UserRegistrationRouter: Router = express.Router();
+const RegisterUserRouter: Router = express.Router();
 const jsonParser: NextHandleFunction = bodyParser.json();
 
-UserRegistrationRouter.post("/", jsonParser, async (request: Request, response: Response) => {
+RegisterUserRouter.post("/", jsonParser, async (request: Request, response: Response) => {
     try {
         const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = new UserRegistrationOnPostgreSQLDatabase();
         const joiValidation: JoiValidation = new JoiValidation();
@@ -61,4 +61,4 @@ const composeRegisterUserRequest = (requestBody: any): RegisterUserRequest => {
     return registerUserRequest;
 }
 
-export { UserRegistrationRouter }
+export { RegisterUserRouter }
