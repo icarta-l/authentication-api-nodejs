@@ -54,7 +54,7 @@ describe("test user authentication featured", () => {
         .setPassword("test@mail.com");
 
         const authenticateUserController: AuthenticateUserController = new AuthenticateUserController();
-        const authenticateUserResponse: AuthenticateUserResponse = await authenticateUserController.handleAuthenticateUserRequest(registerUserRequest, userAuthenticationOnPostgreSQLDatabase);
+        const authenticateUserResponse: AuthenticateUserResponse = await authenticateUserController.handleAuthenticateUserRequest(authenticateUserRequest, userAuthenticationOnPostgreSQLDatabase);
 
         expect(authenticateUserResponse.userIsLoggedIn()).toBe(true);
     })
