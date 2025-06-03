@@ -1,4 +1,6 @@
+import User from "../AuthenticateUserValueObject/User";
+
 export default interface AuthenticateUserGateway
 {
-    authenticateUser(email: string, password: string): boolean;
+    retrieveUser(email: string): Promise<User|boolean>;
 }
