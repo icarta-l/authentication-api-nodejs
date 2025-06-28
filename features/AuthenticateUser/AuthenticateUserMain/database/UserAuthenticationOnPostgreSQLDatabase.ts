@@ -1,5 +1,5 @@
 import PostgreSQLDatabase from "../../../../services/database/PostgreSQLDatabase";
-import User from "../../AuthenticateUserValueObject/User";
+import argon2 from "argon2";
 import type { QueryResult } from "pg";
 
 export default class UserAuthenticationOnPostgreSQLDatabase
@@ -25,7 +25,7 @@ export default class UserAuthenticationOnPostgreSQLDatabase
         return await this.postgreSQLDatabase.query(query, values);
     }
 
-    public async retrieveUser(email: string): Promise<User|boolean>
+    public async authenticateUser(email: string, password: string): Promise<boolean>
     {
         const queryResult: QueryResult|undefined = await this.postgreSQLDatabase.query(
             "SELECT password FROM application_users WHERE email = $1",
@@ -33,10 +33,15 @@ export default class UserAuthenticationOnPostgreSQLDatabase
         ); 
 
         if (queryResult !== undefined && queryResult.rowCount !== null && queryResult.rowCount > 0) {
-            const user = new User();
-            user.setPassword(queryResult.password);
+            let passwordIsMatchingTheAssociatedEmailInDatabase;
+
+            try {
+                passwordIsMatchingTheAssociatedEmailInDatabase = await argon2.verify(queryResult.rows[0].password, password);
+            } catch (error) {
+                return false;
+            }
             
-            return user;
+            return passwordIsMatchingTheAssociatedEmailInDatabase;
         } else {
             return false;
         }

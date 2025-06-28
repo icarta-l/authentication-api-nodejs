@@ -31,7 +31,7 @@ const retrieveUserRegistrationOnPostgreSQLDatabase = async (): Promise<UserRegis
 }
 
 describe("test user authentication featured", () => {
-    test("Can authentication a registered user", async () => {
+    test("Can authenticate a registered user", async () => {
         const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
         const joiValidation: JoiValidation = new JoiValidation();
 
@@ -50,8 +50,8 @@ describe("test user authentication featured", () => {
         const userAuthenticationOnPostgreSQLDatabase: UserAuthenticationOnPostgreSQLDatabase = await retrieveUserAuthenticationOnPostgreSQLDatabase();
 
         const authenticateUserRequest: AuthenticateUserRequest = new AuthenticateUserRequest();
-        authenticateUserRequest.setEmail("user")
-        .setPassword("test@mail.com");
+        authenticateUserRequest.setEmail("test@mail.com")
+        .setPassword("Sdf sdfs sdSDFdfi 1234 !");
 
         const authenticateUserController: AuthenticateUserController = new AuthenticateUserController();
         const authenticateUserResponse: AuthenticateUserResponse = await authenticateUserController.handleAuthenticateUserRequest(authenticateUserRequest, userAuthenticationOnPostgreSQLDatabase);
