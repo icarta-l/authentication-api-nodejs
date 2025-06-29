@@ -1,7 +1,7 @@
 export default class AuthenticateUserResponse
 {
     private _userIsLoggedIn!: boolean;
-    private userId!: number;
+    private userId!: string;
 
     public userIsLoggedIn(): boolean
     {
@@ -15,12 +15,12 @@ export default class AuthenticateUserResponse
         return this;
     }
 
-    public getUserId(): number
+    public getUserId(): string
     {
         return this.userId;
     }
 
-    public setUserId(userId: number): AuthenticateUserResponse
+    public setUserId(userId: string): AuthenticateUserResponse
     {
         this.userId = userId;
 

@@ -25,10 +25,10 @@ export default class UserAuthenticationOnPostgreSQLDatabase
         return await this.postgreSQLDatabase.query(query, values);
     }
 
-    public async authenticateUser(email: string, password: string): Promise<boolean>
+    public async authenticateUser(email: string, password: string): Promise<string|false>
     {
         const queryResult: QueryResult|undefined = await this.postgreSQLDatabase.query(
-            "SELECT password FROM application_users WHERE email = $1",
+            "SELECT id, password FROM application_users WHERE email = $1",
             [email]
         ); 
 
@@ -40,8 +40,13 @@ export default class UserAuthenticationOnPostgreSQLDatabase
             } catch (error) {
                 return false;
             }
+
+            if (passwordIsMatchingTheAssociatedEmailInDatabase) {
+                return queryResult.rows[0].id;
+            } else {
+                return false;
+            }
             
-            return passwordIsMatchingTheAssociatedEmailInDatabase;
         } else {
             return false;
         }

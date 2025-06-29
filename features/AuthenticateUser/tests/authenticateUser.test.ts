@@ -57,5 +57,6 @@ describe("test user authentication featured", () => {
         const authenticateUserResponse: AuthenticateUserResponse = await authenticateUserController.handleAuthenticateUserRequest(authenticateUserRequest, userAuthenticationOnPostgreSQLDatabase);
 
         expect(authenticateUserResponse.userIsLoggedIn()).toBe(true);
+        expect(authenticateUserResponse.getUserId().length).toBeGreaterThan(0);
     })
 });

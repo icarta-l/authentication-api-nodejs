@@ -9,16 +9,19 @@ export default class AuthenticateUserController
     {
         const authenticateUserResponse = new AuthenticateUserResponse();
 
-        console.log("Here!");
-
         try {
-            const isAuthenticated = await userAuthenticationOnPostgreSQLDatabase.authenticateUser(authenticateUserRequest.getEmail(), authenticateUserRequest.getPassword());
-            authenticateUserResponse.setWetherUserSuccessfullyLoggedIn(isAuthenticated);
+            const userID = await userAuthenticationOnPostgreSQLDatabase.authenticateUser(authenticateUserRequest.getEmail(), authenticateUserRequest.getPassword());
+
+            if (userID) {
+                authenticateUserResponse.setWetherUserSuccessfullyLoggedIn(true)
+                .setUserId(userID);
+            } else {
+                authenticateUserResponse.setWetherUserSuccessfullyLoggedIn(false);
+
+            }
         } catch (error) {
             authenticateUserResponse.setWetherUserSuccessfullyLoggedIn(false);
         }
-
-        console.log("authenticateUserResponse", authenticateUserResponse);
 
         return authenticateUserResponse;
     }

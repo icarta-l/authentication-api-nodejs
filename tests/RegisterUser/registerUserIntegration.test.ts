@@ -73,7 +73,7 @@ describe("POST to register route", () => {
 
     test("without a first name or a last name should return a 201 HTTP response", async () => {
         const response = await axios.post(registerEndpoint, {
-            username: "UserTest",
+            username: "UserTest2",
             email: "test2@gmail.com",
             password: "my Test pasSDF234 sword1",
             firstName: "Lorem",

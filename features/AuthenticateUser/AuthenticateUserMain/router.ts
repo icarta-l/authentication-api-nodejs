@@ -4,14 +4,40 @@ import bodyParser from 'body-parser';
 import type { NextHandleFunction } from "connect";
 import BadRequestError from '../../../services/errors/BadRequestError';
 import UnauthorisedActionError from '../../../services/errors/UnauthorisedActionError';
+import UserAuthenticationOnPostgreSQLDatabase from './database/UserAuthenticationOnPostgreSQLDatabase';
+import AuthenticateUserController from '../AuthenticateUserController/AuthenticateUserController';
+import AuthenticateUserRequest from '../AuthenticateUserController/AuthenticateUserRequest';
+import AuthenticateUserResponse from '../AuthenticateUserController/AuthenticateUserResponse';
 
 const AuthenticateUserRouter: Router = express.Router();
 const jsonParser: NextHandleFunction = bodyParser.json();
 
+const composeAuthenticateUserRequest = (requestBody: any): AuthenticateUserRequest => {
+    const authenticateUserRequest = new AuthenticateUserRequest();
+
+    authenticateUserRequest.setEmail(requestBody.email)
+    .setPassword(requestBody.password);
+
+    return authenticateUserRequest;
+}
+
+
 AuthenticateUserRouter.post("/", jsonParser, async (request: Request, response: Response) => {
     try {
+        const userAuthenticationOnPostgreSQLDatabase: UserAuthenticationOnPostgreSQLDatabase = new UserAuthenticationOnPostgreSQLDatabase();
 
-        
+        const [, authenticateUserRequest] = await Promise.all([userAuthenticationOnPostgreSQLDatabase.connect(), composeAuthenticateUserRequest(request.body)]);
+
+        const authenticateUserController: AuthenticateUserController = new AuthenticateUserController();
+        const authenticateUserResponse: AuthenticateUserResponse = await authenticateUserController.handleAuthenticateUserRequest(authenticateUserRequest, userAuthenticationOnPostgreSQLDatabase);
+
+        if (authenticateUserResponse.userIsLoggedIn()) {
+            response.status(200)
+            .json("User logged in");
+        } else {
+            response.status(500)
+            .json("Couldn't log in");
+        }
         
     } catch(error) {
         if (error instanceof BadRequestError) {
@@ -23,6 +49,8 @@ AuthenticateUserRouter.post("/", jsonParser, async (request: Request, response: 
         } else {
             throw error;
         }
+
+        console.log("Error", error);
     }
 });
 
