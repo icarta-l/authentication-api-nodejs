@@ -8,6 +8,8 @@ import UserAuthenticationOnPostgreSQLDatabase from './database/UserAuthenticatio
 import AuthenticateUserController from '../AuthenticateUserController/AuthenticateUserController';
 import AuthenticateUserRequest from '../AuthenticateUserController/AuthenticateUserRequest';
 import AuthenticateUserResponse from '../AuthenticateUserController/AuthenticateUserResponse';
+import jwt from 'jsonwebtoken';
+import "dotenv/config";
 
 const AuthenticateUserRouter: Router = express.Router();
 const jsonParser: NextHandleFunction = bodyParser.json();
@@ -32,8 +34,18 @@ AuthenticateUserRouter.post("/", jsonParser, async (request: Request, response: 
         const authenticateUserResponse: AuthenticateUserResponse = await authenticateUserController.handleAuthenticateUserRequest(authenticateUserRequest, userAuthenticationOnPostgreSQLDatabase);
 
         if (authenticateUserResponse.userIsLoggedIn()) {
+
+            if (!process.env.JSONWEBTOKEN_SECRET_KEY) {
+                throw new Error("FATAL ERROR: json web token secret key not defined!");
+            }
+
             response.status(200)
-            .json("User logged in");
+            .json({
+                message: "User logged in",
+                token: jwt.sign({userID: authenticateUserResponse.getUserId()}, process.env.JSONWEBTOKEN_SECRET_KEY, {
+                    "expiresIn": "1h"
+                })
+            });
         } else {
             response.status(500)
             .json("Couldn't log in");

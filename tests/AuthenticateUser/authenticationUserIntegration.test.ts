@@ -1,5 +1,5 @@
 import {afterAll, describe, expect, test} from '@jest/globals';
-import axios from 'axios';
+import axios, {AxiosResponse} from 'axios';
 import PostgreSQLDatabase from "../../services/database/PostgreSQLDatabase";
 import "dotenv/config";
 
@@ -31,5 +31,14 @@ describe("POST to authentication route", () => {
         });
 
         expect(authenticationResponse.status).toEqual(200);
+    });
+
+    test("should return a authentication token", async () => {
+        const authenticationResponse: AxiosResponse = await axios.post(autenticationEndpoint, {
+            email: "test@gmail.com",
+            password: "my Test pas SDF23sword1"
+        });
+        
+        expect(authenticationResponse.data.token.length).toBeGreaterThan(0);
     });
 });
