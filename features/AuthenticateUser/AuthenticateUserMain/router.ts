@@ -34,7 +34,6 @@ AuthenticateUserRouter.post("/", jsonParser, async (request: Request, response: 
         const authenticateUserResponse: AuthenticateUserResponse = await authenticateUserController.handleAuthenticateUserRequest(authenticateUserRequest, userAuthenticationOnPostgreSQLDatabase);
 
         if (authenticateUserResponse.userIsLoggedIn()) {
-
             if (!process.env.JSONWEBTOKEN_SECRET_KEY) {
                 throw new Error("FATAL ERROR: json web token secret key not defined!");
             }
@@ -61,8 +60,6 @@ AuthenticateUserRouter.post("/", jsonParser, async (request: Request, response: 
         } else {
             throw error;
         }
-
-        console.log("Error", error);
     }
 });
 

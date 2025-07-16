@@ -1,3 +1,5 @@
+import BadRequestError from "../../../services/errors/BadRequestError";
+
 export default class AuthenticateUserRequest
 {
     private email!: string;
@@ -10,6 +12,10 @@ export default class AuthenticateUserRequest
 
     public setEmail(email: string): AuthenticateUserRequest
     {
+        if (email.length === 0) {
+            throw new BadRequestError("User cannot authenticate without an email");
+        }
+
         this.email = email;
 
         return this;
@@ -22,6 +28,10 @@ export default class AuthenticateUserRequest
 
     public setPassword(password: string): AuthenticateUserRequest
     {
+        if (password.length === 0) {
+            throw new BadRequestError("User cannot authenticate without a password");
+        }
+
         this.password = password;
 
         return this;

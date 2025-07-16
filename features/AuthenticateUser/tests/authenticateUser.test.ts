@@ -9,6 +9,8 @@ import RegisterUserController from '../../RegisterUser/RegisterUserController/Re
 import RegisterUserRequest from '../../RegisterUser/RegisterUserController/RegisterUserRequest';
 import type RegisterUserResponse from '../../RegisterUser/RegisterUserController/RegisterUserResponse';
 import JoiValidation from "../../RegisterUser/RegisterUserMain/validation/JoiValidation";
+import BadRequestError from '../../../services/errors/BadRequestError';
+import UnauthorisedActionError from '../../../services/errors/UnauthorisedActionError';
 
 afterAll(async() => {
     const userAuthenticationOnPostgreSQLDatabase: UserAuthenticationOnPostgreSQLDatabase = await retrieveUserAuthenticationOnPostgreSQLDatabase();
@@ -58,5 +60,44 @@ describe("test user authentication featured", () => {
 
         expect(authenticateUserResponse.userIsLoggedIn()).toBe(true);
         expect(authenticateUserResponse.getUserId().length).toBeGreaterThan(0);
-    })
+    });
+
+    test("Empty email triggers a BadRequestError", async () => {
+        const authenticateUserRequest: AuthenticateUserRequest = new AuthenticateUserRequest();
+
+        const misformedRequest = () => {
+            authenticateUserRequest.setEmail("")
+        }
+
+        expect(misformedRequest).toThrow(BadRequestError);
+        expect(misformedRequest).toThrow("User cannot authenticate without an email");
+    });
+
+    test("Empty password triggers a BadRequestError", async () => {
+        const authenticateUserRequest: AuthenticateUserRequest = new AuthenticateUserRequest();
+
+        const misformedRequest = () => {
+            authenticateUserRequest.setPassword("")
+        }
+
+        expect(misformedRequest).toThrow(BadRequestError);
+        expect(misformedRequest).toThrow("User cannot authenticate without a password");
+    });
+
+    test("Email must be valid", async () => {
+        const userAuthenticationOnPostgreSQLDatabase: UserAuthenticationOnPostgreSQLDatabase = await retrieveUserAuthenticationOnPostgreSQLDatabase();
+
+        const authenticateUserRequest: AuthenticateUserRequest = new AuthenticateUserRequest();
+        authenticateUserRequest.setEmail("test@mail.com")
+        .setPassword("Sdf sdfs sdSDFdfi 1234 !");
+
+        const authenticateUserController: AuthenticateUserController = new AuthenticateUserController();
+
+        const requestWithInvalidEmail = async () => {
+            await authenticateUserController.handleAuthenticateUserRequest(authenticateUserRequest, userAuthenticationOnPostgreSQLDatabase);
+        }
+
+        await expect(requestWithInvalidEmail()).rejects.toThrow(UnauthorisedActionError);
+        await expect(requestWithInvalidEmail()).rejects.toThrow("Email must be valid");
+    });
 });
