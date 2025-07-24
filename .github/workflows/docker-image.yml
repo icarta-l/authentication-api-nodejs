@@ -1,0 +1,41 @@
+name: Docker Compose CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Start at the root
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Compose
+      uses: docker/setup-compose-action@v1
+    
+    - name: Start the Docker Compose Network
+      run: docker compose up -d
+
+    - name: Install the NPM dependencies
+      run: docker compose run --user root node npm install
+    
+    - name: Compile JavaScript files from TypeScript
+      run: docker compose run --user root node npm run typescript
+
+    - name: Populate the PostgreSQL database from dump.sql
+      run: docker compose exec -i db sh -c 'psql -U my-user -d authentication-api -X' < ./dump.sql
+
+    - name: Start node server in the background
+      run: |
+        nohup docker compose exec node npm run start:test > server.log 2>&1 &
+        sleep 5
+
+    - name: launch npm test inside docker compose container
+      run: docker compose run --user root node npm run test:action

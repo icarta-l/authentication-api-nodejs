@@ -5,7 +5,10 @@
   "main": "app.js",
   "scripts": {
     "test": "NODE_PATH=. jest --watchAll --no-cache --detectOpenHandles",
-    "start": "nodemon app.js"
+    "test:action": "NODE_PATH=. jest --no-cache --detectOpenHandles --forceExit",
+    "start": "nodemon app.js",
+    "start:test": "node app.js",
+    "typescript": "tsc"
   },
   "author": "Idan Carta-Lag",
   "license": "ISC",
