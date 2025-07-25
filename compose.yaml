@@ -17,6 +17,25 @@ services:
     command: "npm start"
     depends_on:
       - db
+
+  test-runner:
+    image: "node:23.11"
+    user: "node"
+    working_dir: /home/node/app
+    environment:
+      NODE_ENV: development
+      POSTGRES_PASSWORD: test
+      POSTGRES_USER: my-user
+      POSTGRES_DB: authentication-api
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+    volumes:
+      - ./:/home/node/app
+    command: "npm run test:actiondebug"
+    depends_on:
+      - node
+      - db
+
   db:
     image: postgres
     restart: always

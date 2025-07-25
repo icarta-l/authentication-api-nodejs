@@ -1,44 +1,49 @@
 import {afterAll, describe, expect, test} from '@jest/globals';
-import axios, {AxiosResponse} from 'axios';
 import PostgreSQLDatabase from "../../services/database/PostgreSQLDatabase";
 import "dotenv/config";
+import {app} from "../../app";
+import request from "supertest";
 
-const server = require("app.ts").server;
-const registerEndpoint = "http://localhost:8080/register";
-const autenticationEndpoint = "http://localhost:8080/login";
+const registerEndpoint = "/register";
+const autenticationEndpoint = "/login";
 
 afterAll(async() => {
     const postgreSQLDatabase = PostgreSQLDatabase.getInstance();
     await postgreSQLDatabase.connect();
     await postgreSQLDatabase.query("TRUNCATE TABLE application_users");
     await postgreSQLDatabase.close();
-    await server.close();
 });
 
 describe("POST to authentication route", () => {
     test("should return a 200 HTTP response", async () => {
-        const registrationResponse = await axios.post(registerEndpoint, {
-            username: "UserTest",
-            email: "test@gmail.com",
-            password: "my Test pas SDF23sword1",
-            firstName: "Lorem",
-            lastName: "Ipsum"
-        });
+        const registrationResponse = await request(app)
+            .post(registerEndpoint)
+            .send({
+                username: "UserTest",
+                email: "test@gmail.com",
+                password: "my Test pas SDF23sword1",
+                firstName: "Lorem",
+                lastName: "Ipsum"
+            });
 
-        const authenticationResponse = await axios.post(autenticationEndpoint, {
-            email: "test@gmail.com",
-            password: "my Test pas SDF23sword1"
-        });
+        const authenticationResponse = await request(app)
+            .post(autenticationEndpoint)
+            .send({
+                email: "test@gmail.com",
+                password: "my Test pas SDF23sword1"
+            });
 
         expect(authenticationResponse.status).toEqual(200);
     });
 
-    test("should return a authentication token", async () => {
-        const authenticationResponse: AxiosResponse = await axios.post(autenticationEndpoint, {
-            email: "test@gmail.com",
-            password: "my Test pas SDF23sword1"
-        });
-        
-        expect(authenticationResponse.data.token.length).toBeGreaterThan(0);
+    test("should return an authentication token", async () => {
+        const authenticationResponse = await request(app)
+            .post(autenticationEndpoint)
+            .send({
+                email: "test@gmail.com",
+                password: "my Test pas SDF23sword1"
+            });
+
+        expect(authenticationResponse.body.token.length).toBeGreaterThan(0);
     });
 });

@@ -1,6 +1,7 @@
 node_modules
 db-data
 app.js
+server.js
 FeatureAddingHandler.js
 features/*/*.js
 features/*/*/*.js

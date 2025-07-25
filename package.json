@@ -6,8 +6,9 @@
   "scripts": {
     "test": "NODE_PATH=. jest --watchAll --no-cache --detectOpenHandles",
     "test:action": "NODE_PATH=. jest --no-cache --detectOpenHandles --forceExit",
-    "start": "nodemon app.js",
-    "start:test": "node app.js",
+    "test:actiondebug": "NODE_PATH=. jest --no-cache --detectOpenHandles --forceExit",
+    "start": "nodemon server.js",
+    "start:test": "node server.js",
     "typescript": "tsc"
   },
   "author": "Idan Carta-Lag",

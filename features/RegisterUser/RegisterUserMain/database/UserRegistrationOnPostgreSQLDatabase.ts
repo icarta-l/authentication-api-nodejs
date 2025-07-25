@@ -28,12 +28,12 @@ export default class UserRegistrationOnPostgreSQLDatabase implements RegisterUse
 
     public async connect(): Promise<void> 
     {
-        this.postgreSQLDatabase.connect();
+        await this.postgreSQLDatabase.connect();
     }
 
     public async close(): Promise<void> 
     {
-        this.postgreSQLDatabase.close();
+        await this.postgreSQLDatabase.close();
     }
 
     public async query(query: string, values?: Array<any>): Promise<any>

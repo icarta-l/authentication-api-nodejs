@@ -14,11 +14,12 @@ const RegisterUserRouter: Router = express.Router();
 const jsonParser: NextHandleFunction = bodyParser.json();
 
 RegisterUserRouter.post("/", jsonParser, async (request: Request, response: Response) => {
-    try {
-        const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = new UserRegistrationOnPostgreSQLDatabase();
-        const joiValidation: JoiValidation = new JoiValidation();
+    const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = new UserRegistrationOnPostgreSQLDatabase();
 
-        const [, registerUserRequest] = await Promise.all([userRegistrationOnPostgreSQLDatabase.connect(), composeRegisterUserRequest(request.body)]);
+    try {
+        const joiValidation: JoiValidation = new JoiValidation();
+        await userRegistrationOnPostgreSQLDatabase.connect();
+        const registerUserRequest = composeRegisterUserRequest(request.body);
 
         const registerUserController: RegisterUserController = new RegisterUserController();
         const registerUserResponse: RegisterUserResponse = await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
@@ -34,6 +35,8 @@ RegisterUserRouter.post("/", jsonParser, async (request: Request, response: Resp
         }
         
     } catch(error) {
+        await userRegistrationOnPostgreSQLDatabase.close();
+
         if (error instanceof BadRequestError) {
             response.status(422)
             .json(error.getMessage());
