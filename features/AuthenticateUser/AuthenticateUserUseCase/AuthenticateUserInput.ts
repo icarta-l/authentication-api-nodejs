@@ -1,7 +1,8 @@
 import UserAuthenticationInput from "./UserAuthenticationInput";
-import AuthenticateUserOutput from "./AuthenticateUserOutput";
+import UserAuthenticationOutput from "./UserAuthenticationOutput";
+import AuthenticateUserGateway from "./AuthenticateUserGateway";
 
 export default interface AuthenticateUserInput
 {
-    authenticateUser(userAuthenticationInput: UserAuthenticationInput): AuthenticateUserOutput;
+    authenticateUser(userAuthenticationInput: UserAuthenticationInput, authenticateUserGateway: AuthenticateUserGateway): Promise<UserAuthenticationOutput>;
 }

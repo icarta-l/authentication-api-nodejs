@@ -1,28 +1,36 @@
 import AuthenticateUserRequest from "./AuthenticateUserRequest";
 import AuthenticateUserResponse from "./AuthenticateUserResponse";
+import AuthenticateUserPresenter from "./AuthenticateUserPresenter";
 import AuthenticateUserInput from "../AuthenticateUserUseCase/AuthenticateUserInput";
-import UserAuthenticationOnPostgreSQLDatabase from "../AuthenticateUserMain/database/UserAuthenticationOnPostgreSQLDatabase";
+import UserAuthenticationInput from "../AuthenticateUserUseCase/UserAuthenticationInput";
+import AuthenticateUserUseCase from "../AuthenticateUserUseCase/AuthenticateUserUseCase";
+import UserAuthenticationOutput from "../AuthenticateUserUseCase/UserAuthenticationOutput";
+import AuthenticateUserGateway from "../AuthenticateUserUseCase/AuthenticateUserGateway";
 
-export default class AuthenticateUserController
+export default class AuthenticateUserController implements AuthenticateUserInput
 {
-    public async handleAuthenticateUserRequest(authenticateUserRequest: AuthenticateUserRequest, userAuthenticationOnPostgreSQLDatabase: UserAuthenticationOnPostgreSQLDatabase): Promise<AuthenticateUserResponse>
+    public async handleAuthenticateUserRequest(authenticateUserRequest: AuthenticateUserRequest, authenticateUserGateway: AuthenticateUserGateway): Promise<AuthenticateUserResponse>
     {
-        const authenticateUserResponse = new AuthenticateUserResponse();
+        const userAuthenticationOutput: UserAuthenticationOutput = await this.authenticateUser(await this.composeUserAuthenticationInput(authenticateUserRequest), authenticateUserGateway);
+        const authenticateUserPresenter: AuthenticateUserPresenter = new AuthenticateUserPresenter();
+        authenticateUserPresenter.retrieveUserAuthenticationOutput(userAuthenticationOutput);
 
-        try {
-            const userID = await userAuthenticationOnPostgreSQLDatabase.authenticateUser(authenticateUserRequest.getEmail(), authenticateUserRequest.getPassword());
+        return authenticateUserPresenter.getAuthenticateUserResponse();
+    }
 
-            if (userID) {
-                authenticateUserResponse.setWetherUserSuccessfullyLoggedIn(true)
-                .setUserId(userID);
-            } else {
-                authenticateUserResponse.setWetherUserSuccessfullyLoggedIn(false);
+    public async authenticateUser(userAuthenticationInput: UserAuthenticationInput, authenticateUserGateway: AuthenticateUserGateway): Promise<UserAuthenticationOutput>
+    {
+        const authenticateUserUseCase: AuthenticateUserUseCase = new AuthenticateUserUseCase();
+        return await authenticateUserUseCase.authenticateUser(userAuthenticationInput, authenticateUserGateway);
+    }
 
-            }
-        } catch (error) {
-            authenticateUserResponse.setWetherUserSuccessfullyLoggedIn(false);
-        }
+     private async composeUserAuthenticationInput(authenticateUserRequest: AuthenticateUserRequest): Promise<UserAuthenticationInput>
+    {
+        const userAuthenticationInput = new UserAuthenticationInput();
 
-        return authenticateUserResponse;
+        userAuthenticationInput.setEmail(authenticateUserRequest.getEmail())
+        .setPassword(authenticateUserRequest.getPassword());
+
+        return userAuthenticationInput;
     }
 }
