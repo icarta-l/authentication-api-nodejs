@@ -25,6 +25,7 @@ export default class PostgreSQLDatabase {
                 password: process.env.POSTGRES_PASSWORD,
                 port: Number(process.env.POSTGRES_PORT)
             });
+
             await this.client.connect();
             this._isConnected = true;
         }

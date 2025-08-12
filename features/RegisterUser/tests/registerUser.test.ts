@@ -253,4 +253,67 @@ describe("Test register user feature", () => {
         await expect(requestWithTooShortPassword()).rejects.toThrow(UnauthorisedActionError);
         await expect(requestWithTooShortPassword()).rejects.toThrow("Password needs to have at least 3 numbers");
     });
+
+    test("Firstname needs to have letters only", async () => {
+        const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
+        const joiValidation: JoiValidation = new JoiValidation();
+
+        const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
+        registerUserRequest.setUsername("user")
+        .setEmail("test@mail.com")
+        .setPassword("Sdf sSDF sdfsdfi 1234 !")
+        .setFirstName("1231231")
+        .setLastName("Bobby");
+
+        const registerUserController: RegisterUserController = new RegisterUserController();
+
+        const requestWithNumericalFirstName = async () => {
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+        }
+
+        await expect(requestWithNumericalFirstName()).rejects.toThrow(UnauthorisedActionError);
+        await expect(requestWithNumericalFirstName()).rejects.toThrow("Firstname needs to have letters only");
+    });
+
+    test("Lastname needs to have letters only", async () => {
+        const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
+        const joiValidation: JoiValidation = new JoiValidation();
+
+        const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
+        registerUserRequest.setUsername("user")
+        .setEmail("test@mail.com")
+        .setPassword("Sdf sSDF sdfsdfi 1234 !")
+        .setFirstName("Bob")
+        .setLastName("123123123");
+
+        const registerUserController: RegisterUserController = new RegisterUserController();
+
+        const requestWithNumericalLastName = async () => {
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+        }
+
+        await expect(requestWithNumericalLastName()).rejects.toThrow(UnauthorisedActionError);
+        await expect(requestWithNumericalLastName()).rejects.toThrow("Lastname needs to have letters only");
+    });
+
+    test("Cannot register a new user with an already registered email address", async () => {
+        const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
+        const joiValidation: JoiValidation = new JoiValidation();
+
+        const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
+        registerUserRequest.setUsername("user")
+        .setEmail("test@mail.com")
+        .setPassword("Sdf sdfs sdSDFdfi 1234 !")
+        .setFirstName("Bob")
+        .setLastName("Bobby");
+
+        const registerUserController: RegisterUserController = new RegisterUserController();
+
+        const requestWithNumericalLastName = async () => {
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+        }
+
+        await expect(requestWithNumericalLastName()).rejects.toThrow(UnauthorisedActionError);
+        await expect(requestWithNumericalLastName()).rejects.toThrow("Email was already registered by another user");
+    });
 });

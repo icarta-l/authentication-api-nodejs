@@ -60,8 +60,9 @@ AuthenticateUserRouter.post("/", jsonParser, async (request: Request, response: 
         } else if(error instanceof UnauthorisedActionError) {
             response.status(403)
             .json(error.getMessage());
-        } else {
-            throw error;
+        } else if (error instanceof Error) {
+            response.status(500)
+            .json(error.message);
         }
     }
 });

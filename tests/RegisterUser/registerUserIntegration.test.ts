@@ -4,7 +4,7 @@ import "dotenv/config";
 import {app} from "../../app";
 import request from "supertest";
 
-const registerEndpoint = "/register";
+const userEndpoint = "/user";
 
 
 afterAll(async() => {
@@ -17,7 +17,7 @@ afterAll(async() => {
 describe("POST to register route", () => {
     test("should return a 201 HTTP response", async () => {
         const response = await request(app)
-            .post(registerEndpoint)
+            .post(userEndpoint)
             .send({
                 username: "UserTest",
                 email: "test@gmail.com",
@@ -31,7 +31,7 @@ describe("POST to register route", () => {
 
     test("empty username field returns a 422 HTTP response", async () => {
         const response = await request(app)
-            .post(registerEndpoint)
+            .post(userEndpoint)
             .send({
                 username: "",
                 email: "test@gmail.com",
@@ -45,7 +45,7 @@ describe("POST to register route", () => {
 
     test("empty password field returns a 422 HTTP response", async () => {
         const response = await request(app)
-            .post(registerEndpoint)
+            .post(userEndpoint)
             .send({
                 username: "UserTest",
                 email: "test@gmail.com",
@@ -59,7 +59,7 @@ describe("POST to register route", () => {
 
     test("empty email field returns a 422 HTTP response", async () => {
         const response = await request(app)
-            .post(registerEndpoint)
+            .post(userEndpoint)
             .send({
                 username: "UserTest",
                 email: "",
@@ -73,7 +73,7 @@ describe("POST to register route", () => {
 
     test("without a first name or a last name should return a 201 HTTP response", async () => {
         const response = await request(app)
-            .post(registerEndpoint)
+            .post(userEndpoint)
             .send({
                 username: "UserTest2",
                 email: "test2@gmail.com",
@@ -87,7 +87,7 @@ describe("POST to register route", () => {
 
     test("username without letters should return a 403 HTTP response", async () => {
         const response = await request(app)
-            .post(registerEndpoint)
+            .post(userEndpoint)
             .send({
                 username: "1234",
                 email: "test3@gmail.com",
@@ -101,7 +101,7 @@ describe("POST to register route", () => {
 
     test("username with special characters should return a 403 HTTP response", async () => {
         const response = await request(app)
-            .post(registerEndpoint)
+            .post(userEndpoint)
             .send({
                 username: "asdfas*+!s",
                 email: "test3@gmail.com",
@@ -115,7 +115,7 @@ describe("POST to register route", () => {
 
     test("not valid emails should return a 403 HTTP response", async () => {
         const response = await request(app)
-            .post(registerEndpoint)
+            .post(userEndpoint)
             .send({
                 username: "UserTest",
                 email: "test@mail.c",
@@ -129,7 +129,7 @@ describe("POST to register route", () => {
 
     test("under 12 characters password should return a 403 HTTP response", async () => {
         const response = await request(app)
-            .post(registerEndpoint)
+            .post(userEndpoint)
             .send({
                 username: "UserTest",
                 email: "test3@gmail.com",
@@ -143,7 +143,7 @@ describe("POST to register route", () => {
 
     test("password with less than 3 lowercase letters should return a 403 HTTP response", async () => {
         const response = await request(app)
-            .post(registerEndpoint)
+            .post(userEndpoint)
             .send({
                 username: "SDSDFSDFSDFSDF",
                 email: "test3@gmail.com",
@@ -157,7 +157,7 @@ describe("POST to register route", () => {
 
     test("password with less than 3 uppercase letters should return a 403 HTTP response", async () => {
         const response = await request(app)
-            .post(registerEndpoint)
+            .post(userEndpoint)
             .send({
                 username: "SDSDFSDFSDFSDF",
                 email: "test3@gmail.com",
@@ -171,7 +171,7 @@ describe("POST to register route", () => {
 
     test("password with less than 3 symbols, special characters or space should return a 403 HTTP response", async () => {
         const response = await request(app)
-            .post(registerEndpoint)
+            .post(userEndpoint)
             .send({
                 username: "SDSDFSDFSDFSDF",
                 email: "test3@gmail.com",
@@ -185,11 +185,25 @@ describe("POST to register route", () => {
 
     test("password with less than 3 numbers should return a 403 HTTP response", async () => {
         const response = await request(app)
-            .post(registerEndpoint)
+            .post(userEndpoint)
             .send({
                 username: "SDSDFSDFSDFSDF",
                 email: "test3@gmail.com",
                 password: "SDfsdf sdfsFSDfs dfsfSd fSdf",
+                firstName: "Lorem",
+                lastName: "Ipsum"
+            });
+
+        expect(response.status).toEqual(403);
+    });
+
+    test("already used email address should return a 403 HTTP response", async () => {
+        const response = await request(app)
+            .post(userEndpoint)
+            .send({
+                username: "UserTest",
+                email: "test@gmail.com",
+                password: "my Test pas SDF23sword1",
                 firstName: "Lorem",
                 lastName: "Ipsum"
             });

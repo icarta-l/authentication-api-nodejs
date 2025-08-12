@@ -32,8 +32,8 @@ export default class RegisterUserController implements RegisterUserInput
         await userRegistrationInput.setUsername(registerUserRequest.getUsername());
         await userRegistrationInput.setEmail(registerUserRequest.getEmail());
         await userRegistrationInput.setPassword(registerUserRequest.getPassword());
-        userRegistrationInput.setFirstName(registerUserRequest.getFirstName())
-        .setLastName(registerUserRequest.getLastName());
+        await userRegistrationInput.setFirstName(registerUserRequest.getFirstName());
+        await userRegistrationInput.setLastName(registerUserRequest.getLastName());
 
         return userRegistrationInput;
     }

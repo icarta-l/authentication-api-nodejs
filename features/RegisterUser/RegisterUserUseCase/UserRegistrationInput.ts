@@ -103,8 +103,14 @@ export default class UserRegistrationInput {
         return this.firstName;
     }
 
-    public setFirstName(firstName: string): UserRegistrationInput
+    public async setFirstName(firstName: string): Promise<UserRegistrationInput>
     {
+        const firstNameHasLettersOnly = await this.userRegistrationInputValidator.firstNameHasLettersOnly(firstName);
+        
+        if (! firstNameHasLettersOnly) {
+            throw new UnauthorisedActionError("Firstname needs to have letters only");
+        }
+
         this.firstName = firstName;
 
         return this;
@@ -115,8 +121,14 @@ export default class UserRegistrationInput {
         return this.lastName;
     }
 
-    public setLastName(lastName: string): UserRegistrationInput
+    public async setLastName(lastName: string): Promise<UserRegistrationInput>
     {
+        const lastNameHasLettersOnly = await this.userRegistrationInputValidator.lastNameHasLettersOnly(lastName);
+        
+        if (! lastNameHasLettersOnly) {
+            throw new UnauthorisedActionError("Lastname needs to have letters only");
+        }
+
         this.lastName = lastName;
 
         return this;

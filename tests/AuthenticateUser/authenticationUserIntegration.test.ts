@@ -4,7 +4,7 @@ import "dotenv/config";
 import {app} from "../../app";
 import request from "supertest";
 
-const registerEndpoint = "/register";
+const registerEndpoint = "/user";
 const autenticationEndpoint = "/login";
 
 afterAll(async() => {

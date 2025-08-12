@@ -26,6 +26,20 @@ export default class UserRegistrationOnPostgreSQLDatabase implements RegisterUse
         }
     }
 
+    public async emailIsAvailable(informedEmailAddress: string): Promise<boolean>
+    {
+        const queryResult: QueryResult|undefined = await this.postgreSQLDatabase.query(
+            "SELECT id FROM application_users WHERE email = $1",
+            [informedEmailAddress]
+        );
+
+        if (queryResult !== undefined && queryResult.rowCount !== null && queryResult.rowCount > 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public async connect(): Promise<void> 
     {
         await this.postgreSQLDatabase.connect();

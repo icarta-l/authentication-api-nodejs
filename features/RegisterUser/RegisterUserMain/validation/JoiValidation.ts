@@ -12,6 +12,8 @@ export default class JoiValidation implements UserRegistrationInputValidator
     private _passwordMustHaveAtLeast3UppercaseLetters: Schema;
     private _passwordMustHaveAtLeast3Symbols: Schema;
     private _passwordMustHaveAtLeast3Numbers: Schema;
+    private _firstNameHasLettersOnly: Schema;
+    private _lastNameHasLettersOnly: Schema;
 
     constructor()
     {
@@ -23,6 +25,8 @@ export default class JoiValidation implements UserRegistrationInputValidator
         this._passwordMustHaveAtLeast3UppercaseLetters = Joi.string().pattern(/(.*[A-Z]{1}.*){3,}/);
         this._passwordMustHaveAtLeast3Symbols = Joi.string().pattern(/(.*[~`!@#$%^&*()_\-+={[}\]\|\\\:;\"'<,>\.\?\/\ ]{1}.*){3,}/);
         this._passwordMustHaveAtLeast3Numbers = Joi.string().pattern(/(.*[0-9]{1}.*){3,}/);
+        this._firstNameHasLettersOnly = Joi.string().pattern(/^[a-zA-Z]{1,}$/);
+        this._lastNameHasLettersOnly = Joi.string().pattern(/^[a-zA-Z]{1,}$/);
     }
 
     public async usernameHasAtLeat3Letters(username: string): Promise<boolean>
@@ -106,6 +110,28 @@ export default class JoiValidation implements UserRegistrationInputValidator
     {
         try {
             await this._passwordMustHaveAtLeast3Numbers.validateAsync(password);
+        } catch (error) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public async firstNameHasLettersOnly(firstName: string): Promise<boolean>
+    {
+        try {
+            await this._firstNameHasLettersOnly.validateAsync(firstName);
+        } catch (error) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public async lastNameHasLettersOnly(lastName: string): Promise<boolean>
+    {
+        try {
+            await this._lastNameHasLettersOnly.validateAsync(lastName);
         } catch (error) {
             return false;
         }

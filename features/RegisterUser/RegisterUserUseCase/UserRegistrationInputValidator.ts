@@ -7,4 +7,6 @@ export default interface UserRegistrationInputValidator {
     passwordMustHaveAtLeast3UppercaseLetters(password: string): Promise<boolean>
     passwordMustHaveAtLeast3Symbols(password: string): Promise<boolean>
     passwordMustHaveAtLeast3Numbers(password: string): Promise<boolean>
+    firstNameHasLettersOnly(firstName: string): Promise<boolean>;
+    lastNameHasLettersOnly(lastName: string): Promise<boolean>;
 }
