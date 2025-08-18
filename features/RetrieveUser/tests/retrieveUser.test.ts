@@ -14,6 +14,11 @@ import AuthenticateUserRequest from '../../AuthenticateUser/AuthenticateUserCont
 import type AuthenticateUserResponse from '../../AuthenticateUser/AuthenticateUserController/AuthenticateUserResponse';
 import AuthenticationUserJoiValidation from "../../AuthenticateUser/AuthenticateUserMain/validation/JoiValidation";
 
+import UserRetrievalOnPostgreSQLDatabase from "../RetrieveUserMain/database/UserRetrievalOnPostgreSQLDatabase";
+import RetrieveUserJoiValidation from "../RetrieveUserMain/validation/RetrieveUserJoiValidation";
+import RetrieveUserRequest from "../RetrieveUserController/RetrieveUserRequest";
+import RetrieveUserResponse from "../RetrieveUserController/RetrieveUserResponse";
+
 afterAll(async() => {
     const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
     await userRegistrationOnPostgreSQLDatabase.query("TRUNCATE TABLE application_users");
@@ -75,15 +80,15 @@ describe("test user retrieval feature", () => {
         const userRetrievalOnPostgreSQLDatabase: UserRetrievalOnPostgreSQLDatabase = await retrieveUserRetrievalOnPostgreSQLDatabase();
 
         const retrieveUserRequest: RetrieveUserRequest = new RetrieveUserRequest();
-        retrieveUserRequest.setId(authenticateUserResponse.getUserId());
+        retrieveUserRequest.setUserId(authenticateUserResponse.getUserId());
 
         const retrieveUserController: RetrieveUserController = new RetrieveUserController();
-        const retrieveUserResponse: AuthenticateUserResponse = await retrieveUserController.handleAuthenticateUserRequest(retrieveUserRequest, userRetrievalOnPostgreSQLDatabase, retrieveUserJoiValidation);
+        const retrieveUserResponse: RetrieveUserResponse = await retrieveUserController.handleAuthenticateUserRequest(retrieveUserRequest, userRetrievalOnPostgreSQLDatabase, retrieveUserJoiValidation);
 
         expect(retrieveUserResponse.getUsername()).toBe("user");
         expect(retrieveUserResponse.getEmail()).toBe("test@mail.com");
         expect(retrieveUserResponse.getFirstName()).toBe("Bob");
         expect(retrieveUserResponse.getLastName()).toBe("Bobby");
-        expect(retrieveUserResponse.getId()).toBe(authenticateUserResponse.getUserId());
+        expect(retrieveUserResponse.getUserId()).toBe(authenticateUserResponse.getUserId());
     });
 });
