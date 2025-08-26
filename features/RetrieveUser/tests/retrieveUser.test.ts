@@ -18,6 +18,7 @@ import UserRetrievalOnPostgreSQLDatabase from "../RetrieveUserMain/database/User
 import RetrieveUserJoiValidation from "../RetrieveUserMain/validation/RetrieveUserJoiValidation";
 import RetrieveUserRequest from "../RetrieveUserController/RetrieveUserRequest";
 import RetrieveUserResponse from "../RetrieveUserController/RetrieveUserResponse";
+import RetrieveUserController from "../RetrieveUserController/RetrieveUserController";
 
 afterAll(async() => {
     const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
@@ -80,10 +81,10 @@ describe("test user retrieval feature", () => {
         const userRetrievalOnPostgreSQLDatabase: UserRetrievalOnPostgreSQLDatabase = await retrieveUserRetrievalOnPostgreSQLDatabase();
 
         const retrieveUserRequest: RetrieveUserRequest = new RetrieveUserRequest();
-        retrieveUserRequest.setUserId(authenticateUserResponse.getUserId());
+        retrieveUserRequest.setRequestedUserId(authenticateUserResponse.getUserId());
 
         const retrieveUserController: RetrieveUserController = new RetrieveUserController();
-        const retrieveUserResponse: RetrieveUserResponse = await retrieveUserController.handleAuthenticateUserRequest(retrieveUserRequest, userRetrievalOnPostgreSQLDatabase, retrieveUserJoiValidation);
+        const retrieveUserResponse: RetrieveUserResponse = await retrieveUserController.handleRetrieveUserRequest(retrieveUserRequest, userRetrievalOnPostgreSQLDatabase, retrieveUserJoiValidation);
 
         expect(retrieveUserResponse.getUsername()).toBe("user");
         expect(retrieveUserResponse.getEmail()).toBe("test@mail.com");
