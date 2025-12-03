@@ -1,4 +1,4 @@
-import UserAuthenticationOutput from "./AuthenticateUserOutput";
+import UserAuthenticationOutput from "./UserAuthenticationOutput";
 
 export default interface AuthenticateUserOutput
 {

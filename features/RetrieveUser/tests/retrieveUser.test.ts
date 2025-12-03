@@ -4,7 +4,7 @@ import UserRegistrationOnPostgreSQLDatabase from "../../RegisterUser/RegisterUse
 import RegisterUserController from "../../RegisterUser/RegisterUserController/RegisterUserController";
 import RegisterUserRequest from "../../RegisterUser/RegisterUserController/RegisterUserRequest";
 import type RegisterUserResponse from "../../RegisterUser/RegisterUserController/RegisterUserResponse";
-import RegisterUserJoiValidation from "../../RegisterUser/RegisterUserMain/validation/JoiValidation";
+import RegisterUserJoiValidation from "../../RegisterUser/RegisterUserMain/validation/RegisterUserJoiValidation";
 import BadRequestError from "../../../services/errors/BadRequestError";
 import UnauthorisedActionError from "../../../services/errors/UnauthorisedActionError";
 import InvalidRetrievedValuesError from "../../../services/errors/InvalidRetrievedValuesError";
@@ -13,7 +13,7 @@ import UserAuthenticationOnPostgreSQLDatabase from "../../AuthenticateUser/Authe
 import AuthenticateUserController from "../../AuthenticateUser/AuthenticateUserController/AuthenticateUserController";
 import AuthenticateUserRequest from "../../AuthenticateUser/AuthenticateUserController/AuthenticateUserRequest";
 import type AuthenticateUserResponse from "../../AuthenticateUser/AuthenticateUserController/AuthenticateUserResponse";
-import AuthenticationUserJoiValidation from "../../AuthenticateUser/AuthenticateUserMain/validation/JoiValidation";
+import AuthenticationUserJoiValidation from "../../AuthenticateUser/AuthenticateUserMain/validation/AuthenticateUserJoiValidation";
 
 import UserRetrievalOnPostgreSQLDatabase from "../RetrieveUserMain/database/UserRetrievalOnPostgreSQLDatabase";
 import RetrieveUserInputJoiValidation from "../RetrieveUserMain/validation/RetrieveUserInputJoiValidation";
@@ -102,15 +102,15 @@ describe("test user retrieval feature", () => {
     });
 
     test("Cannot retrieve a user without a requested user id", async () => {
-            const retrieveUserRequest: RetrieveUserRequest = new RetrieveUserRequest();
-    
-            const misformedRequest = () => {
-                retrieveUserRequest.setRequestedUserId("")
-            }
-    
-            expect(misformedRequest).toThrow(BadRequestError);
-            expect(misformedRequest).toThrow("Cannot retrieve a user without a requested user id");
-        });
+        const retrieveUserRequest: RetrieveUserRequest = new RetrieveUserRequest();
+
+        const misformedRequest = () => {
+            retrieveUserRequest.setRequestedUserId("")
+        }
+
+        expect(misformedRequest).toThrow(BadRequestError);
+        expect(misformedRequest).toThrow("Cannot retrieve a user without a requested user id");
+    });
 
     test("Cannot retrieve a non-existent user", async () => {
         const retrieveUserRequest: RetrieveUserRequest = new RetrieveUserRequest();

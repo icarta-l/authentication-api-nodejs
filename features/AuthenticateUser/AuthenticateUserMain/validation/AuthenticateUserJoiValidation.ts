@@ -2,7 +2,7 @@ import Joi from "joi";
 import type { Schema } from "joi";
 import UserAuthenticationInputValidator from "../../AuthenticateUserUseCase/UserAuthenticationInputValidator";
 
-export default class JoiValidation implements UserAuthenticationInputValidator
+export default class AuthenticateUserJoiValidation implements UserAuthenticationInputValidator
 {
     private _emailMustBeValid: Schema;
 

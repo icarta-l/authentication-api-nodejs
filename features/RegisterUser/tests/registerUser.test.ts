@@ -5,7 +5,7 @@ import RegisterUserRequest from '../RegisterUserController/RegisterUserRequest';
 import type RegisterUserResponse from '../RegisterUserController/RegisterUserResponse';
 import BadRequestError from '../../../services/errors/BadRequestError';
 import UnauthorisedActionError from '../../../services/errors/UnauthorisedActionError';
-import JoiValidation from "../RegisterUserMain/validation/JoiValidation";
+import RegisterUserJoiValidation from "../RegisterUserMain/validation/RegisterUserJoiValidation";
 
 afterAll(async() => {
     const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
@@ -23,7 +23,7 @@ const retrieveUserRegistrationOnPostgreSQLDatabase = async (): Promise<UserRegis
 describe("Test register user feature", () => {
     test("Can register a new user", async () => {
         const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
-        const joiValidation: JoiValidation = new JoiValidation();
+        const registerUserJoiValidation: RegisterUserJoiValidation = new RegisterUserJoiValidation();
 
         const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
         registerUserRequest.setUsername("user")
@@ -33,7 +33,7 @@ describe("Test register user feature", () => {
         .setLastName("Bobby");
 
         const registerUserController: RegisterUserController = new RegisterUserController();
-        const registerUserResponse: RegisterUserResponse = await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+        const registerUserResponse: RegisterUserResponse = await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, registerUserJoiValidation);
 
         expect(registerUserResponse.userIsRegistered()).toBe(true);
     });
@@ -73,7 +73,7 @@ describe("Test register user feature", () => {
 
     test("Can register a new user without first name or last name", async () => {
         const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
-        const joiValidation: JoiValidation = new JoiValidation();
+        const registerUserJoiValidation: RegisterUserJoiValidation = new RegisterUserJoiValidation();
 
         const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
         registerUserRequest.setUsername("user2")
@@ -81,14 +81,14 @@ describe("Test register user feature", () => {
         .setPassword("Sdf sdfs sdfsSDfSDdfi 1234 !");
 
         const registerUserController: RegisterUserController = new RegisterUserController();
-        const registerUserResponse: RegisterUserResponse = await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+        const registerUserResponse: RegisterUserResponse = await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, registerUserJoiValidation);
 
         expect(registerUserResponse.userIsRegistered()).toBe(true);
     });
 
     test("Username needs to have at least 3 letters", async () => {
         const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
-        const joiValidation: JoiValidation = new JoiValidation();
+        const registerUserJoiValidation: RegisterUserJoiValidation = new RegisterUserJoiValidation();
 
         const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
         registerUserRequest.setUsername("1234")
@@ -100,7 +100,7 @@ describe("Test register user feature", () => {
         const registerUserController: RegisterUserController = new RegisterUserController();
 
         const requestWithNumericalUsername = async () => {
-            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, registerUserJoiValidation);
         }
 
         await expect(requestWithNumericalUsername()).rejects.toThrow(UnauthorisedActionError);
@@ -109,7 +109,7 @@ describe("Test register user feature", () => {
 
     test("Username needs to be only letters, numbers and underscores", async () => {
         const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
-        const joiValidation: JoiValidation = new JoiValidation();
+        const registerUserJoiValidation: RegisterUserJoiValidation = new RegisterUserJoiValidation();
 
         const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
         registerUserRequest.setUsername("asdb!#asdf")
@@ -121,7 +121,7 @@ describe("Test register user feature", () => {
         const registerUserController: RegisterUserController = new RegisterUserController();
 
         const requestWithUnauthorisedSpecialCharacters = async () => {
-            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, registerUserJoiValidation);
         }
 
         await expect(requestWithUnauthorisedSpecialCharacters()).rejects.toThrow(UnauthorisedActionError);
@@ -130,7 +130,7 @@ describe("Test register user feature", () => {
 
     test("Email must be valid", async () => {
         const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
-        const joiValidation: JoiValidation = new JoiValidation();
+        const registerUserJoiValidation: RegisterUserJoiValidation = new RegisterUserJoiValidation();
 
         const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
         registerUserRequest.setUsername("user")
@@ -142,7 +142,7 @@ describe("Test register user feature", () => {
         const registerUserController: RegisterUserController = new RegisterUserController();
 
         const requestWithInvalidEmail = async () => {
-            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, registerUserJoiValidation);
         }
 
         await expect(requestWithInvalidEmail()).rejects.toThrow(UnauthorisedActionError);
@@ -151,7 +151,7 @@ describe("Test register user feature", () => {
 
     test("Password should be at least 12 characters long", async () => {
         const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
-        const joiValidation: JoiValidation = new JoiValidation();
+        const registerUserJoiValidation: RegisterUserJoiValidation = new RegisterUserJoiValidation();
 
         const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
         registerUserRequest.setUsername("user")
@@ -163,7 +163,7 @@ describe("Test register user feature", () => {
         const registerUserController: RegisterUserController = new RegisterUserController();
 
         const requestWithTooShortPassword = async () => {
-            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, registerUserJoiValidation);
         }
 
         await expect(requestWithTooShortPassword()).rejects.toThrow(UnauthorisedActionError);
@@ -172,7 +172,7 @@ describe("Test register user feature", () => {
 
     test("Password should have at least 3 lowercase letters", async () => {
         const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
-        const joiValidation: JoiValidation = new JoiValidation();
+        const registerUserJoiValidation: RegisterUserJoiValidation = new RegisterUserJoiValidation();
 
         const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
         registerUserRequest.setUsername("user")
@@ -184,7 +184,7 @@ describe("Test register user feature", () => {
         const registerUserController: RegisterUserController = new RegisterUserController();
 
         const requestWithTooShortPassword = async () => {
-            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, registerUserJoiValidation);
         }
 
         await expect(requestWithTooShortPassword()).rejects.toThrow(UnauthorisedActionError);
@@ -193,7 +193,7 @@ describe("Test register user feature", () => {
 
     test("Password should have at least 3 uppercase letters", async () => {
         const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
-        const joiValidation: JoiValidation = new JoiValidation();
+        const registerUserJoiValidation: RegisterUserJoiValidation = new RegisterUserJoiValidation();
 
         const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
         registerUserRequest.setUsername("user")
@@ -205,7 +205,7 @@ describe("Test register user feature", () => {
         const registerUserController: RegisterUserController = new RegisterUserController();
 
         const requestWithTooShortPassword = async () => {
-            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, registerUserJoiValidation);
         }
 
         await expect(requestWithTooShortPassword()).rejects.toThrow(UnauthorisedActionError);
@@ -214,7 +214,7 @@ describe("Test register user feature", () => {
 
     test("Password should have at least 3 symbols, special characters or space", async () => {
         const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
-        const joiValidation: JoiValidation = new JoiValidation();
+        const registerUserJoiValidation: RegisterUserJoiValidation = new RegisterUserJoiValidation();
 
         const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
         registerUserRequest.setUsername("user")
@@ -226,7 +226,7 @@ describe("Test register user feature", () => {
         const registerUserController: RegisterUserController = new RegisterUserController();
 
         const requestWithTooShortPassword = async () => {
-            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, registerUserJoiValidation);
         }
 
         await expect(requestWithTooShortPassword()).rejects.toThrow(UnauthorisedActionError);
@@ -235,7 +235,7 @@ describe("Test register user feature", () => {
 
     test("Password should have at least 3 numbers", async () => {
         const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
-        const joiValidation: JoiValidation = new JoiValidation();
+        const registerUserJoiValidation: RegisterUserJoiValidation = new RegisterUserJoiValidation();
 
         const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
         registerUserRequest.setUsername("user")
@@ -247,7 +247,7 @@ describe("Test register user feature", () => {
         const registerUserController: RegisterUserController = new RegisterUserController();
 
         const requestWithTooShortPassword = async () => {
-            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, registerUserJoiValidation);
         }
 
         await expect(requestWithTooShortPassword()).rejects.toThrow(UnauthorisedActionError);
@@ -256,7 +256,7 @@ describe("Test register user feature", () => {
 
     test("Firstname needs to have letters only", async () => {
         const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
-        const joiValidation: JoiValidation = new JoiValidation();
+        const registerUserJoiValidation: RegisterUserJoiValidation = new RegisterUserJoiValidation();
 
         const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
         registerUserRequest.setUsername("user")
@@ -268,7 +268,7 @@ describe("Test register user feature", () => {
         const registerUserController: RegisterUserController = new RegisterUserController();
 
         const requestWithNumericalFirstName = async () => {
-            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, registerUserJoiValidation);
         }
 
         await expect(requestWithNumericalFirstName()).rejects.toThrow(UnauthorisedActionError);
@@ -277,7 +277,7 @@ describe("Test register user feature", () => {
 
     test("Lastname needs to have letters only", async () => {
         const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
-        const joiValidation: JoiValidation = new JoiValidation();
+        const registerUserJoiValidation: RegisterUserJoiValidation = new RegisterUserJoiValidation();
 
         const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
         registerUserRequest.setUsername("user")
@@ -289,7 +289,7 @@ describe("Test register user feature", () => {
         const registerUserController: RegisterUserController = new RegisterUserController();
 
         const requestWithNumericalLastName = async () => {
-            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, registerUserJoiValidation);
         }
 
         await expect(requestWithNumericalLastName()).rejects.toThrow(UnauthorisedActionError);
@@ -298,7 +298,7 @@ describe("Test register user feature", () => {
 
     test("Cannot register a new user with an already registered email address", async () => {
         const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
-        const joiValidation: JoiValidation = new JoiValidation();
+        const registerUserJoiValidation: RegisterUserJoiValidation = new RegisterUserJoiValidation();
 
         const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
         registerUserRequest.setUsername("user")
@@ -310,7 +310,7 @@ describe("Test register user feature", () => {
         const registerUserController: RegisterUserController = new RegisterUserController();
 
         const requestWithNumericalLastName = async () => {
-            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+            await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, registerUserJoiValidation);
         }
 
         await expect(requestWithNumericalLastName()).rejects.toThrow(UnauthorisedActionError);

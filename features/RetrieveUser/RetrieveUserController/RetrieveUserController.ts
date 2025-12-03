@@ -25,7 +25,7 @@ export default class RetrieveUserController implements RetrieveUserInput
     public async retrieveUser(userRetrievalInput: UserRetrievalInput, retrieveUserGateway: RetrieveUserGateway, userRetrievalOutputValidator: UserRetrievalOutputValidator): Promise<UserRetrievalOutput>
     {
         const retrieveUserUseCase: RetrieveUserUseCase = new RetrieveUserUseCase();
-        const userRetrievalOutput: UserRetrievalOutput = await retrieveUserUseCase.retrieveUser(userRetrievalInput, retrieveUserGateway, userRetrievalOutputValidator);
+        const userRetrievalOutput: UserRetrievalOutput = await retrieveUserUseCase.retrieveUser(userRetrievalInput, retrieveUserGateway);
 
         return userRetrievalOutput;
     }

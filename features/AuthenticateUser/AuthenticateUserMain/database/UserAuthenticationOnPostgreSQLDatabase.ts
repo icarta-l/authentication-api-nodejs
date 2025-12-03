@@ -1,8 +1,9 @@
 import PostgreSQLDatabase from "../../../../services/database/PostgreSQLDatabase";
 import argon2 from "argon2";
 import type { QueryResult } from "pg";
+import AuthenticateUserGateway from "../../AuthenticateUserUseCase/AuthenticateUserGateway";
 
-export default class UserAuthenticationOnPostgreSQLDatabase
+export default class UserAuthenticationOnPostgreSQLDatabase implements AuthenticateUserGateway
 {
     private postgreSQLDatabase: PostgreSQLDatabase;
 

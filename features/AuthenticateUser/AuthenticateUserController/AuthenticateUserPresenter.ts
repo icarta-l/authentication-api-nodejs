@@ -1,7 +1,8 @@
 import UserAuthenticationOutput from "../AuthenticateUserUseCase/UserAuthenticationOutput";
 import AuthenticateUserResponse from "./AuthenticateUserResponse";
+import AuthenticateUserOutput from "../AuthenticateUserUseCase/AuthenticateUserOutput";
 
-export default class AuthenticateUserPresenter
+export default class AuthenticateUserPresenter implements AuthenticateUserOutput
 {
     private authenticateUserResponse!: AuthenticateUserResponse;
 

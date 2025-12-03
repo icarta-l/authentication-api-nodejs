@@ -1,7 +1,8 @@
 import UserRegistrationOutput from "../RegisterUserUseCase/UserRegistrationOutput";
 import RegisterUserResponse from "./RegisterUserResponse";
+import RegisterUserOutput from "../RegisterUserUseCase/RegisterUserOutput";
 
-export default class RegisterUserPresenter
+export default class RegisterUserPresenter implements RegisterUserOutput
 {
     private registerUserResponse!: RegisterUserResponse;
 

@@ -6,7 +6,7 @@ import UnauthorisedActionError from "../../../services/errors/UnauthorisedAction
 
 export default class RetrieveUserUseCase 
 {
-    public async retrieveUser(userRetrievalInput: UserRetrievalInput, retrieveUserGateway: RetrieveUserGateway, userRetrievalOutputValidator: UserRetrievalOutputValidator): Promise<UserRetrievalOutput>
+    public async retrieveUser(userRetrievalInput: UserRetrievalInput, retrieveUserGateway: RetrieveUserGateway): Promise<UserRetrievalOutput>
     {
         const userRetrievalOutput: UserRetrievalOutput|false = await retrieveUserGateway.retrieveUser(userRetrievalInput.getRequestedUserId());
         

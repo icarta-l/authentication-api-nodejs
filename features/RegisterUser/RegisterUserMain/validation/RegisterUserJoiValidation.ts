@@ -2,7 +2,7 @@ import Joi from "joi";
 import type { Schema } from "joi";
 import UserRegistrationInputValidator from "../../RegisterUserUseCase/UserRegistrationInputValidator";
 
-export default class JoiValidation implements UserRegistrationInputValidator
+export default class RegisterUserJoiValidation implements UserRegistrationInputValidator
 {
     private _usernameHasAtLeast3Letters: Schema;
     private _usernameHasOnlyLettersNumberAndUnderscores: Schema;

@@ -3,13 +3,13 @@ import UserAuthenticationOnPostgreSQLDatabase from "../AuthenticateUserMain/data
 import AuthenticateUserController from '../AuthenticateUserController/AuthenticateUserController';
 import AuthenticateUserRequest from '../AuthenticateUserController/AuthenticateUserRequest';
 import type AuthenticateUserResponse from '../AuthenticateUserController/AuthenticateUserResponse';
-import AuthenticationUserJoiValidation from "../AuthenticateUserMain/validation/JoiValidation";
+import AuthenticationUserJoiValidation from "../AuthenticateUserMain/validation/AuthenticateUserJoiValidation";
 
 import UserRegistrationOnPostgreSQLDatabase from "../../RegisterUser/RegisterUserMain/database/UserRegistrationOnPostgreSQLDatabase";
 import RegisterUserController from '../../RegisterUser/RegisterUserController/RegisterUserController';
 import RegisterUserRequest from '../../RegisterUser/RegisterUserController/RegisterUserRequest';
 import type RegisterUserResponse from '../../RegisterUser/RegisterUserController/RegisterUserResponse';
-import RegisterUserJoiValidation from "../../RegisterUser/RegisterUserMain/validation/JoiValidation";
+import RegisterUserJoiValidation from "../../RegisterUser/RegisterUserMain/validation/RegisterUserJoiValidation";
 import BadRequestError from '../../../services/errors/BadRequestError';
 import UnauthorisedActionError from '../../../services/errors/UnauthorisedActionError';
 

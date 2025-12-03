@@ -10,7 +10,7 @@ import AuthenticateUserRequest from '../AuthenticateUserController/AuthenticateU
 import AuthenticateUserResponse from '../AuthenticateUserController/AuthenticateUserResponse';
 import jwt from 'jsonwebtoken';
 import "dotenv/config";
-import JoiValidation from './validation/JoiValidation';
+import AuthenticateUserJoiValidation from './validation/AuthenticateUserJoiValidation';
 
 const AuthenticateUserRouter: Router = express.Router();
 const jsonParser: NextHandleFunction = bodyParser.json();
@@ -26,7 +26,7 @@ const composeAuthenticateUserRequest = (requestBody: any): AuthenticateUserReque
 
 
 AuthenticateUserRouter.post("/", jsonParser, async (request: Request, response: Response) => {
-    const joiValidation: JoiValidation = new JoiValidation();
+    const authenticateUserJoiValidation: AuthenticateUserJoiValidation = new AuthenticateUserJoiValidation();
 
     try {
         const userAuthenticationOnPostgreSQLDatabase: UserAuthenticationOnPostgreSQLDatabase = new UserAuthenticationOnPostgreSQLDatabase();
@@ -34,7 +34,7 @@ AuthenticateUserRouter.post("/", jsonParser, async (request: Request, response: 
         const [, authenticateUserRequest] = await Promise.all([userAuthenticationOnPostgreSQLDatabase.connect(), composeAuthenticateUserRequest(request.body)]);
 
         const authenticateUserController: AuthenticateUserController = new AuthenticateUserController();
-        const authenticateUserResponse: AuthenticateUserResponse = await authenticateUserController.handleAuthenticateUserRequest(authenticateUserRequest, userAuthenticationOnPostgreSQLDatabase, joiValidation);
+        const authenticateUserResponse: AuthenticateUserResponse = await authenticateUserController.handleAuthenticateUserRequest(authenticateUserRequest, userAuthenticationOnPostgreSQLDatabase, authenticateUserJoiValidation);
 
         if (authenticateUserResponse.userIsLoggedIn()) {
             if (!process.env.JSONWEBTOKEN_SECRET_KEY) {

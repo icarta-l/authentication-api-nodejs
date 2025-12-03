@@ -8,7 +8,7 @@ import RegisterUserRequest from '../RegisterUserController/RegisterUserRequest';
 import type RegisterUserResponse from '../RegisterUserController/RegisterUserResponse';
 import BadRequestError from '../../../services/errors/BadRequestError';
 import UnauthorisedActionError from '../../../services/errors/UnauthorisedActionError';
-import JoiValidation from './validation/JoiValidation';
+import RegisterUserJoiValidation from './validation/RegisterUserJoiValidation';
 
 const RegisterUserRouter: Router = express.Router();
 const jsonParser: NextHandleFunction = bodyParser.json();
@@ -17,12 +17,12 @@ RegisterUserRouter.post("/", jsonParser, async (request: Request, response: Resp
     const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = new UserRegistrationOnPostgreSQLDatabase();
 
     try {
-        const joiValidation: JoiValidation = new JoiValidation();
+        const registerUserJoiValidation: RegisterUserJoiValidation = new RegisterUserJoiValidation();
         await userRegistrationOnPostgreSQLDatabase.connect();
         const registerUserRequest = composeRegisterUserRequest(request.body);
 
         const registerUserController: RegisterUserController = new RegisterUserController();
-        const registerUserResponse: RegisterUserResponse = await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, joiValidation);
+        const registerUserResponse: RegisterUserResponse = await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, registerUserJoiValidation);
 
         await userRegistrationOnPostgreSQLDatabase.close();
 

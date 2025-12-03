@@ -4,7 +4,8 @@ import PostgreSQLDatabase from "../../../../services/database/PostgreSQLDatabase
 import RegisterUserGateway from "../../RegisterUserUseCase/RegisterUserGateway";
 import UserRegistrationInput from "../../RegisterUserUseCase/UserRegistrationInput";
 
-export default class UserRegistrationOnPostgreSQLDatabase implements RegisterUserGateway{
+export default class UserRegistrationOnPostgreSQLDatabase implements RegisterUserGateway 
+{
     private postgreSQLDatabase: PostgreSQLDatabase;
 
     constructor() {
