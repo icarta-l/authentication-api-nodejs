@@ -49,7 +49,7 @@ AuthenticateUserRouter.post("/", jsonParser, async (request: Request, response: 
                 })
             });
         } else {
-            response.status(500)
+            response.status(401)
             .json("Couldn't log in");
         }
         

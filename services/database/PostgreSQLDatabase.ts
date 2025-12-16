@@ -1,4 +1,4 @@
-import type { Client } from "pg";
+import type { Client, QueryResult } from "pg";
 import pg from "pg";
 
 export default class PostgreSQLDatabase {
@@ -41,6 +41,26 @@ export default class PostgreSQLDatabase {
         if (this._isConnected === true) {
             await this.client.end();
             this._isConnected = false;
+        }
+    }
+
+    public async getUserRole(userId: string): Promise<string|false>
+    {
+        const queryResult: QueryResult|undefined = await this.client.query(
+            "SELECT role FROM application_users WHERE id = $1",
+            [userId]
+        );
+
+        if (queryResult !== undefined && queryResult.rowCount !== null && queryResult.rowCount > 0) {
+            switch(queryResult.rows[0].role) {
+                case "USER_ROLE":
+                    return "User";
+                
+                default:
+                    return false;
+            }
+        } else {
+            return false;
         }
     }
 }

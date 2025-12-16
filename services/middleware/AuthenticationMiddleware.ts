@@ -3,15 +3,20 @@ import type { Request, Response } from "express";
 import jwt, {JwtPayload} from 'jsonwebtoken';
 import "dotenv/config";
 
+import UnauthorisedActionError from "../errors/UnauthorisedActionError";
+
 interface UserPayload extends JwtPayload {
   userID: string;
 }
 
-async function UpdateUserInformationAuthenticationMiddleware (request: Request, response: Response, next: NextFunction) {
+async function AuthenticationMiddleware (request: Request, response: Response, next: NextFunction) {
     const authorizationHeader = request.get("Authorization");
     
     if (authorizationHeader === undefined) {
-        response.status(403).json("User not authenticated");
+        response.status(403).json({
+            message: "User is not authenticated",
+            code: "user_not_authenticated"
+        });
     } else {
         const token = authorizationHeader.split(" ")[1];
 
@@ -36,4 +41,4 @@ async function UpdateUserInformationAuthenticationMiddleware (request: Request, 
 
 }
 
-export default UpdateUserInformationAuthenticationMiddleware;
+export default AuthenticationMiddleware;

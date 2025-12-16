@@ -3,21 +3,21 @@ import type { Request, Response, Router } from "express";
 import bodyParser from "body-parser";
 import type { NextHandleFunction } from "connect";
 
-import UpdateUserInformationAuthenticationMiddleware from "./middleware/UpdateUserInformationAuthenticationMiddleware";
 import UserInformationUpdateOnPostgreSQLDatabase from "./database/UserInformationUpdateOnPostgreSQLDatabase";
 import UpdateUserInformationInputJoiValidation from "./validation/UpdateUserInformationInputJoiValidation";
 import UpdateUserInformationRequest from "../UpdateUserInformationController/UpdateUserInformationRequest";
 import UpdateUserInformationController from "../UpdateUserInformationController/UpdateUserInformationController";
 import UpdateUserInformationResponse from "../UpdateUserInformationController/UpdateUserInformationResponse";
 
+import AuthenticationMiddleware from "../../../services/middleware/AuthenticationMiddleware";
+
 import BadRequestError from "../../../services/errors/BadRequestError";
 import UnauthorisedActionError from "../../../services/errors/UnauthorisedActionError";
-
 
 const UpdateUserInformationRouter: Router = express.Router();
 const jsonParser: NextHandleFunction = bodyParser.json();
 
-UpdateUserInformationRouter.put("/", jsonParser, UpdateUserInformationAuthenticationMiddleware, async (request: Request, response: Response) => {
+UpdateUserInformationRouter.put("/", jsonParser, AuthenticationMiddleware, async (request: Request, response: Response) => {
     const userInformationUpdateOnPostgreSQLDatabase: UserInformationUpdateOnPostgreSQLDatabase = new UserInformationUpdateOnPostgreSQLDatabase();
 
     try {
@@ -25,7 +25,7 @@ UpdateUserInformationRouter.put("/", jsonParser, UpdateUserInformationAuthentica
 
         await userInformationUpdateOnPostgreSQLDatabase.connect();
 
-        const updateUserInformationRequest = composeRetrieveUserRequest(request.body, request.params.userId);
+        const updateUserInformationRequest = composeUpdateUserInformationRequest(request.body, request.params.userId);
 
         const updateUserInformationController: UpdateUserInformationController = new UpdateUserInformationController();
         const updateUserInformationResponse: UpdateUserInformationResponse = await updateUserInformationController.handleUpdateUserInformationRequest(updateUserInformationRequest, userInformationUpdateOnPostgreSQLDatabase, updateUserInformationInputJoiValidation);
@@ -53,7 +53,7 @@ UpdateUserInformationRouter.put("/", jsonParser, UpdateUserInformationAuthentica
     }
 });
 
-const composeRetrieveUserRequest = (requestBody: any, userId: string): UpdateUserInformationRequest => {
+const composeUpdateUserInformationRequest = (requestBody: any, userId: string): UpdateUserInformationRequest => {
     const updateUserInformationRequest = new UpdateUserInformationRequest();
     updateUserInformationRequest.setUserId(userId)
     .setUpdatedUserId(requestBody.updatedUserId)
