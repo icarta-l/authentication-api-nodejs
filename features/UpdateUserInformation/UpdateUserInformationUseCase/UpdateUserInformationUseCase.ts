@@ -21,13 +21,13 @@ export default class UpdateUserInformationUseCase
         switch (await updateUserInformationGateway.getUserRole(userInformationUpdateInput.getUserId())) {
             case "User":
                 if (userInformationUpdateInput.getUserId() !== userInformationUpdateInput.getUpdatedUserId()) {
-                    throw new UnauthorisedActionError("Cannot update another user");
+                    throw new UnauthorisedActionError("Cannot update another user", "cannot_update_another_user");
                 }
                 
                 return true;
             
             default:
-                throw new UnauthorisedActionError("User role was not recognised");
+                throw new UnauthorisedActionError("User role was not recognised", "user_role_not_recognised");
         }
     }
 }

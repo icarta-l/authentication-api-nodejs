@@ -2,21 +2,27 @@ import express from 'express';
 import type { Request, Response, Router } from 'express';
 import bodyParser from 'body-parser';
 import type { NextHandleFunction } from "connect";
+
 import BadRequestError from '../../../services/errors/BadRequestError';
 import UnauthorisedActionError from '../../../services/errors/UnauthorisedActionError';
+import TypeValidator from '../../../services/validation/TypeValidator';
+
 import UserAuthenticationOnPostgreSQLDatabase from './database/UserAuthenticationOnPostgreSQLDatabase';
 import AuthenticateUserController from '../AuthenticateUserController/AuthenticateUserController';
 import AuthenticateUserRequest from '../AuthenticateUserController/AuthenticateUserRequest';
 import AuthenticateUserResponse from '../AuthenticateUserController/AuthenticateUserResponse';
+import AuthenticateUserJoiValidation from './validation/AuthenticateUserJoiValidation';
+import AuthenticateUserTypeValidator from './validation/AuthenticateUserTypeValidator';
+
 import jwt from 'jsonwebtoken';
 import "dotenv/config";
-import AuthenticateUserJoiValidation from './validation/AuthenticateUserJoiValidation';
 
 const AuthenticateUserRouter: Router = express.Router();
 const jsonParser: NextHandleFunction = bodyParser.json();
 
-const composeAuthenticateUserRequest = (requestBody: any): AuthenticateUserRequest => {
-    const authenticateUserRequest = new AuthenticateUserRequest();
+const composeAuthenticateUserRequest = async (requestBody: any): Promise<AuthenticateUserRequest> => {
+    const authenticateUserTypeValidator = new AuthenticateUserTypeValidator(new TypeValidator());
+    const authenticateUserRequest: AuthenticateUserRequest = new AuthenticateUserRequest(authenticateUserTypeValidator);
 
     authenticateUserRequest.setEmail(requestBody.email)
     .setPassword(requestBody.password);
@@ -27,14 +33,15 @@ const composeAuthenticateUserRequest = (requestBody: any): AuthenticateUserReque
 
 AuthenticateUserRouter.post("/", jsonParser, async (request: Request, response: Response) => {
     const authenticateUserJoiValidation: AuthenticateUserJoiValidation = new AuthenticateUserJoiValidation();
+    const userAuthenticationOnPostgreSQLDatabase: UserAuthenticationOnPostgreSQLDatabase = new UserAuthenticationOnPostgreSQLDatabase();
 
     try {
-        const userAuthenticationOnPostgreSQLDatabase: UserAuthenticationOnPostgreSQLDatabase = new UserAuthenticationOnPostgreSQLDatabase();
-
-        const [, authenticateUserRequest] = await Promise.all([userAuthenticationOnPostgreSQLDatabase.connect(), composeAuthenticateUserRequest(request.body)]);
-
+        await userAuthenticationOnPostgreSQLDatabase.connect();
+        const authenticateUserRequest = await composeAuthenticateUserRequest(request.body);
         const authenticateUserController: AuthenticateUserController = new AuthenticateUserController();
         const authenticateUserResponse: AuthenticateUserResponse = await authenticateUserController.handleAuthenticateUserRequest(authenticateUserRequest, userAuthenticationOnPostgreSQLDatabase, authenticateUserJoiValidation);
+        
+        await userAuthenticationOnPostgreSQLDatabase.close();
 
         if (authenticateUserResponse.userIsLoggedIn()) {
             if (!process.env.JSONWEBTOKEN_SECRET_KEY) {
@@ -54,12 +61,20 @@ AuthenticateUserRouter.post("/", jsonParser, async (request: Request, response: 
         }
         
     } catch(error) {
+        await userAuthenticationOnPostgreSQLDatabase.close();
+
         if (error instanceof BadRequestError) {
             response.status(422)
-            .json(error.getMessage());
-        } else if(error instanceof UnauthorisedActionError) {
+            .json({
+                message: error.getMessage(),
+                code: error.getErrorCode()
+            });
+        } else if (error instanceof UnauthorisedActionError) {
             response.status(403)
-            .json(error.getMessage());
+            .json({
+                message: error.getMessage(),
+                code: error.getErrorCode()
+            });
         } else if (error instanceof Error) {
             response.status(500)
             .json(error.message);

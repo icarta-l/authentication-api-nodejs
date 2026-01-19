@@ -11,7 +11,7 @@ export default class RetrieveUserUseCase
         const userRetrievalOutput: UserRetrievalOutput|false = await retrieveUserGateway.retrieveUser(userRetrievalInput.getRequestedUserId());
         
         if (!userRetrievalOutput) {
-            throw new UnauthorisedActionError("Requested user could not be retrieved");
+            throw new UnauthorisedActionError("Requested user could not be retrieved", "requested_user_could_not_be_retrieved");
         }
 
         return userRetrievalOutput;

@@ -12,7 +12,7 @@ export default class RegisterUserUseCase
         const emailIsAvailable = await registerUserGateway.emailIsAvailable(userRegistrationInput.getEmail());
 
         if (! emailIsAvailable) {
-            throw new UnauthorisedActionError("Email was already registered by another user");
+            throw new UnauthorisedActionError("Email was already registered by another user", "email_is_already_registered");
         }
 
         userRegistrationOutput.setWetherUserSuccessfullyRegistered(await registerUserGateway.registerUser(userRegistrationInput));

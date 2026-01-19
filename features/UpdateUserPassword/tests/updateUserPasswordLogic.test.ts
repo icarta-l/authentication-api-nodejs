@@ -1,16 +1,18 @@
-import {afterAll, describe, expect, test} from "@jest/globals";
+import {afterAll, beforeAll, describe, expect, test} from "@jest/globals";
 
 import UserRegistrationOnPostgreSQLDatabase from "../../RegisterUser/RegisterUserMain/database/UserRegistrationOnPostgreSQLDatabase";
 import RegisterUserController from "../../RegisterUser/RegisterUserController/RegisterUserController";
 import RegisterUserRequest from "../../RegisterUser/RegisterUserController/RegisterUserRequest";
 import type RegisterUserResponse from "../../RegisterUser/RegisterUserController/RegisterUserResponse";
 import RegisterUserJoiValidation from "../../RegisterUser/RegisterUserMain/validation/RegisterUserJoiValidation";
+import RegisterUserTypeValidator from "../../RegisterUser/RegisterUserMain/validation/RegisterUserTypeValidator";
 
 import UserAuthenticationOnPostgreSQLDatabase from "../../AuthenticateUser/AuthenticateUserMain/database/UserAuthenticationOnPostgreSQLDatabase";
 import AuthenticateUserController from "../../AuthenticateUser/AuthenticateUserController/AuthenticateUserController";
 import AuthenticateUserRequest from "../../AuthenticateUser/AuthenticateUserController/AuthenticateUserRequest";
 import type AuthenticateUserResponse from "../../AuthenticateUser/AuthenticateUserController/AuthenticateUserResponse";
 import AuthenticationUserJoiValidation from "../../AuthenticateUser/AuthenticateUserMain/validation/AuthenticateUserJoiValidation";
+import AuthenticateUserTypeValidator from "../../AuthenticateUser/AuthenticateUserMain/validation/AuthenticateUserTypeValidator";
 
 import UserPasswordUpdateOnPostgreSQLDatabase from "../UpdateUserPasswordMain/database/UserPasswordUpdateOnPostgreSQLDatabase";
 import UpdateUserPasswordInputJoiValidation from "../UpdateUserPasswordMain/validation/UpdateUserPasswordInputJoiValidation";
@@ -52,48 +54,47 @@ const retrieveUserAuthenticationOnPostgreSQLDatabase = async (): Promise<UserAut
 
 let testedUserID!: string;
 
+beforeAll(async() => {
+    const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
+    const registerUserJoiValidation: RegisterUserJoiValidation = new RegisterUserJoiValidation();
+    const authenticationUserJoiValidation: AuthenticationUserJoiValidation = new AuthenticationUserJoiValidation();
+    
+    const registerUserTypeValidator = new RegisterUserTypeValidator(new TypeValidator());
+    const registerUserRequest: RegisterUserRequest = new RegisterUserRequest(registerUserTypeValidator);
+        registerUserRequest.setUsername("user")
+        .setEmail("test@mail.com")
+        .setPassword("Sdf sdfs sdSDFdfi 1234 !")
+        .setFirstName("Bob")
+        .setLastName("Bobby");
+    
+    const registerUserController: RegisterUserController = new RegisterUserController();
+    await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, registerUserJoiValidation);
+    
+    const userAuthenticationOnPostgreSQLDatabase: UserAuthenticationOnPostgreSQLDatabase = await retrieveUserAuthenticationOnPostgreSQLDatabase();
+            
+    const authenticateUserTypeValidator = new AuthenticateUserTypeValidator(new TypeValidator());
+    const authenticateUserRequest: AuthenticateUserRequest = new AuthenticateUserRequest(authenticateUserTypeValidator);
+    authenticateUserRequest.setEmail("test@mail.com")
+    .setPassword("Sdf sdfs sdSDFdfi 1234 !");
+    
+    const authenticateUserController: AuthenticateUserController = new AuthenticateUserController();
+    const authenticateUserResponse: AuthenticateUserResponse = await authenticateUserController.handleAuthenticateUserRequest(authenticateUserRequest, userAuthenticationOnPostgreSQLDatabase, authenticationUserJoiValidation);
+    
+    testedUserID = authenticateUserResponse.getUserId();
+});
+
 describe("test user password update feature logic", () => {
     test("User can update its own password", async () => {
-        const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
-        const registerUserJoiValidation: RegisterUserJoiValidation = new RegisterUserJoiValidation();
-        const authenticationUserJoiValidation: AuthenticationUserJoiValidation = new AuthenticationUserJoiValidation();
-        const updateUserPasswordInputJoiValidation: UpdateUserPasswordInputJoiValidation = new UpdateUserPasswordInputJoiValidation();
-
-        const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
-            registerUserRequest.setUsername("user")
-            .setEmail("test@mail.com")
-            .setPassword("Sdf sdfs sdSDFdfi 1234 !")
-            .setFirstName("Bob")
-            .setLastName("Bobby");
-        
-        const registerUserController: RegisterUserController = new RegisterUserController();
-        const registerUserResponse: RegisterUserResponse = await registerUserController.handleRegisterUserRequest(registerUserRequest, userRegistrationOnPostgreSQLDatabase, registerUserJoiValidation);
-
-        expect(registerUserResponse.userIsRegistered()).toBe(true);
-
-        const userAuthenticationOnPostgreSQLDatabase: UserAuthenticationOnPostgreSQLDatabase = await retrieveUserAuthenticationOnPostgreSQLDatabase();
-                
-        const authenticateUserRequest: AuthenticateUserRequest = new AuthenticateUserRequest();
-        authenticateUserRequest.setEmail("test@mail.com")
-        .setPassword("Sdf sdfs sdSDFdfi 1234 !");
-
-        const authenticateUserController: AuthenticateUserController = new AuthenticateUserController();
-        const authenticateUserResponse: AuthenticateUserResponse = await authenticateUserController.handleAuthenticateUserRequest(authenticateUserRequest, userAuthenticationOnPostgreSQLDatabase, authenticationUserJoiValidation);
-
-        expect(authenticateUserResponse.userIsLoggedIn()).toBe(true);
-        expect(authenticateUserResponse.getUserId().length).toBeGreaterThan(0);
-
         const userPasswordUpdateOnPostgreSQLDatabase: UserPasswordUpdateOnPostgreSQLDatabase = await retrieveUserPasswordUpdateOnPostgreSQLDatabase();
+        const updateUserPasswordInputJoiValidation: UpdateUserPasswordInputJoiValidation = new UpdateUserPasswordInputJoiValidation();
                 
         const updateUserPasswordTypeValidator = new UpdateUserPasswordTypeValidator(new TypeValidator());
         const updateUserPasswordRequest: UpdateUserPasswordRequest = new UpdateUserPasswordRequest(updateUserPasswordTypeValidator);
-        updateUserPasswordRequest.setUserId(authenticateUserResponse.getUserId())
-        .setUpdatedUserId(authenticateUserResponse.getUserId())
+        updateUserPasswordRequest.setUserId(testedUserID)
+        .setUpdatedUserId(testedUserID)
         .setOrignalPassword("Sdf sdfs sdSDFdfi 1234 !")
         .setChangedPassword("Sdf sdfs sdSDFdfi 1234 !2")
         .setChangedPasswordConfirmation("Sdf sdfs sdSDFdfi 1234 !2");
-
-        testedUserID = authenticateUserResponse.getUserId();
 
         const updateUserPasswordController: UpdateUserPasswordController = new UpdateUserPasswordController();
         const updateUserPasswordResponse: UpdateUserPasswordResponse = await updateUserPasswordController.handleUpdateUserPasswordRequest(updateUserPasswordRequest, userPasswordUpdateOnPostgreSQLDatabase, updateUserPasswordInputJoiValidation);
@@ -105,7 +106,8 @@ describe("test user password update feature logic", () => {
         const authenticationUserJoiValidation: AuthenticationUserJoiValidation = new AuthenticationUserJoiValidation();
         const userAuthenticationOnPostgreSQLDatabase: UserAuthenticationOnPostgreSQLDatabase = await retrieveUserAuthenticationOnPostgreSQLDatabase();
         
-        const authenticateUserRequest: AuthenticateUserRequest = new AuthenticateUserRequest();
+        const authenticateUserTypeValidator = new AuthenticateUserTypeValidator(new TypeValidator());
+        const authenticateUserRequest: AuthenticateUserRequest = new AuthenticateUserRequest(authenticateUserTypeValidator);
         authenticateUserRequest.setEmail("test@mail.com")
         .setPassword("Sdf sdfs sdSDFdfi 1234 !2");
 
@@ -119,7 +121,8 @@ describe("test user password update feature logic", () => {
         const authenticationUserJoiValidation: AuthenticationUserJoiValidation = new AuthenticationUserJoiValidation();
         const userAuthenticationOnPostgreSQLDatabase: UserAuthenticationOnPostgreSQLDatabase = await retrieveUserAuthenticationOnPostgreSQLDatabase();
         
-        const authenticateUserRequest: AuthenticateUserRequest = new AuthenticateUserRequest();
+        const authenticateUserTypeValidator = new AuthenticateUserTypeValidator(new TypeValidator());
+        const authenticateUserRequest: AuthenticateUserRequest = new AuthenticateUserRequest(authenticateUserTypeValidator);
         authenticateUserRequest.setEmail("test@mail.com")
         .setPassword("Sdf sdfs sdSDFdfi 1234 !");
 
@@ -249,7 +252,8 @@ describe("test user password update feature logic", () => {
         const userRegistrationOnPostgreSQLDatabase: UserRegistrationOnPostgreSQLDatabase = await retrieveUserRegistrationOnPostgreSQLDatabase();
         const registerUserJoiValidation: RegisterUserJoiValidation = new RegisterUserJoiValidation();
 
-        const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
+        const registerUserTypeValidator = new RegisterUserTypeValidator(new TypeValidator());
+        const registerUserRequest: RegisterUserRequest = new RegisterUserRequest(registerUserTypeValidator);
             registerUserRequest.setUsername("user2")
             .setEmail("test2@mail.com")
             .setPassword("Sdf sdfs sdSDFdfi 1234 !")
@@ -264,7 +268,8 @@ describe("test user password update feature logic", () => {
         const userAuthenticationOnPostgreSQLDatabase: UserAuthenticationOnPostgreSQLDatabase = await retrieveUserAuthenticationOnPostgreSQLDatabase();
         const authenticationUserJoiValidation: AuthenticationUserJoiValidation = new AuthenticationUserJoiValidation();
                 
-        const authenticateUserRequest: AuthenticateUserRequest = new AuthenticateUserRequest();
+        const authenticateUserTypeValidator = new AuthenticateUserTypeValidator(new TypeValidator());
+        const authenticateUserRequest: AuthenticateUserRequest = new AuthenticateUserRequest(authenticateUserTypeValidator);
         authenticateUserRequest.setEmail("test2@mail.com")
         .setPassword("Sdf sdfs sdSDFdfi 1234 !");
 

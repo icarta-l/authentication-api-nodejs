@@ -3,14 +3,15 @@ import {afterAll, beforeAll, describe, expect, test} from "@jest/globals";
 import UserRegistrationOnPostgreSQLDatabase from "../../RegisterUser/RegisterUserMain/database/UserRegistrationOnPostgreSQLDatabase";
 import RegisterUserController from "../../RegisterUser/RegisterUserController/RegisterUserController";
 import RegisterUserRequest from "../../RegisterUser/RegisterUserController/RegisterUserRequest";
-import type RegisterUserResponse from "../../RegisterUser/RegisterUserController/RegisterUserResponse";
 import RegisterUserJoiValidation from "../../RegisterUser/RegisterUserMain/validation/RegisterUserJoiValidation";
+import RegisterUserTypeValidator from "../../RegisterUser/RegisterUserMain/validation/RegisterUserTypeValidator";
 
 import UserAuthenticationOnPostgreSQLDatabase from "../../AuthenticateUser/AuthenticateUserMain/database/UserAuthenticationOnPostgreSQLDatabase";
 import AuthenticateUserController from "../../AuthenticateUser/AuthenticateUserController/AuthenticateUserController";
 import AuthenticateUserRequest from "../../AuthenticateUser/AuthenticateUserController/AuthenticateUserRequest";
 import type AuthenticateUserResponse from "../../AuthenticateUser/AuthenticateUserController/AuthenticateUserResponse";
 import AuthenticationUserJoiValidation from "../../AuthenticateUser/AuthenticateUserMain/validation/AuthenticateUserJoiValidation";
+import AuthenticateUserTypeValidator from "../../AuthenticateUser/AuthenticateUserMain/validation/AuthenticateUserTypeValidator";
 
 import UserPasswordUpdateOnPostgreSQLDatabase from "../UpdateUserPasswordMain/database/UserPasswordUpdateOnPostgreSQLDatabase";
 import UpdateUserPasswordInputJoiValidation from "../UpdateUserPasswordMain/validation/UpdateUserPasswordInputJoiValidation";
@@ -19,7 +20,6 @@ import UpdateUserPasswordController from "../UpdateUserPasswordController/Update
 import UpdateUserPasswordTypeValidator from "../UpdateUserPasswordMain/validation/UpdateUserPasswordTypeValidator";
 
 import TypeValidator from "../../../services/validation/TypeValidator";
-
 import BadRequestError from "../../../services/errors/BadRequestError";
 import UnauthorisedActionError from '../../../services/errors/UnauthorisedActionError';
 
@@ -57,7 +57,8 @@ beforeAll(async() => {
     const registerUserJoiValidation: RegisterUserJoiValidation = new RegisterUserJoiValidation();
     const authenticationUserJoiValidation: AuthenticationUserJoiValidation = new AuthenticationUserJoiValidation();
 
-    const registerUserRequest: RegisterUserRequest = new RegisterUserRequest();
+    const registerUserTypeValidator = new RegisterUserTypeValidator(new TypeValidator());
+    const registerUserRequest: RegisterUserRequest = new RegisterUserRequest(registerUserTypeValidator);
         registerUserRequest.setUsername("user")
         .setEmail("test@mail.com")
         .setPassword("Sdf sdfs sdSDFdfi 1234 !")
@@ -69,7 +70,8 @@ beforeAll(async() => {
 
     const userAuthenticationOnPostgreSQLDatabase: UserAuthenticationOnPostgreSQLDatabase = await retrieveUserAuthenticationOnPostgreSQLDatabase();
             
-    const authenticateUserRequest: AuthenticateUserRequest = new AuthenticateUserRequest();
+    const authenticateUserTypeValidator = new AuthenticateUserTypeValidator(new TypeValidator());
+    const authenticateUserRequest: AuthenticateUserRequest = new AuthenticateUserRequest(authenticateUserTypeValidator);
     authenticateUserRequest.setEmail("test@mail.com")
     .setPassword("Sdf sdfs sdSDFdfi 1234 !");
 

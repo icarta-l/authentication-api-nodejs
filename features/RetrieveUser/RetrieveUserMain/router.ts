@@ -2,14 +2,19 @@ import express from "express";
 import type { Request, Response, Router } from "express";
 import bodyParser from "body-parser";
 import type { NextHandleFunction } from "connect";
+
 import UserRetrievalOnPostgreSQLDatabase from "./database/UserRetrievalOnPostgreSQLDatabase";
 import RetrieveUserController from "../RetrieveUserController/RetrieveUserController";
 import RetrieveUserRequest from "../RetrieveUserController/RetrieveUserRequest";
 import type RetrieveUserResponse from "../RetrieveUserController/RetrieveUserResponse";
-import BadRequestError from "../../../services/errors/BadRequestError";
-import UnauthorisedActionError from "../../../services/errors/UnauthorisedActionError";
 import RetrieveUserInputJoiValidation from "./validation/RetrieveUserInputJoiValidation";
 import RetrieveUserOutputJoiValidation from "./validation/RetrieveUserOutputJoiValidation";
+import RetrieveUserTypeValidator from "./validation/RetrieveUserTypeValidator";
+
+import TypeValidator from "../../../services/validation/TypeValidator";
+import BadRequestError from "../../../services/errors/BadRequestError";
+import UnauthorisedActionError from "../../../services/errors/UnauthorisedActionError";
+import InvalidRetrievedValuesError from "../../../services/errors/InvalidRetrievedValuesError";
 
 const RetrieveUserRouter: Router = express.Router();
 const jsonParser: NextHandleFunction = bodyParser.json();
@@ -40,10 +45,22 @@ RetrieveUserRouter.get("/", jsonParser, async (request: Request, response: Respo
 
         if (error instanceof BadRequestError) {
             response.status(422)
-            .json(error.getMessage());
+            .json({
+                message: error.getMessage(),
+                code: error.getErrorCode()
+            });
         } else if(error instanceof UnauthorisedActionError) {
             response.status(403)
-            .json(error.getMessage());
+            .json({
+                message: error.getMessage(),
+                code: error.getErrorCode()
+            });
+        } else if (error instanceof InvalidRetrievedValuesError) {
+            response.status(500)
+            .json({
+                message: error.getMessage(),
+                code: error.getErrorCode()
+            });
         } else if (error instanceof Error) {
             response.status(500)
             .json(error.message);
@@ -52,7 +69,8 @@ RetrieveUserRouter.get("/", jsonParser, async (request: Request, response: Respo
 });
 
 const composeRetrieveUserRequest = (requestBody: any): RetrieveUserRequest => {
-    const retrieveUserRequest = new RetrieveUserRequest();
+    const retrieveUserTypeValidator = new RetrieveUserTypeValidator(new TypeValidator());
+    const retrieveUserRequest = new RetrieveUserRequest(retrieveUserTypeValidator);
     retrieveUserRequest.setRequestedUserId(requestBody.userId);
 
     return retrieveUserRequest;

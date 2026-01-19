@@ -23,7 +23,7 @@ export default class UserInformationUpdateInput
         const requestedIdIsAlphanumerical = await this.userInformationUpdateInputValidator.userIdIsValid(userId);
         
         if (!requestedIdIsAlphanumerical) {
-            throw new UnauthorisedActionError("User ID is not alphanumerical");
+            throw new UnauthorisedActionError("User ID is not alphanumerical", "user_id_not_alphanumerical");
         }
 
         this.userId = userId;
@@ -41,7 +41,7 @@ export default class UserInformationUpdateInput
         const requestedIdIsAlphanumerical = await this.userInformationUpdateInputValidator.userIdIsValid(updatedUserId);
         
         if (!requestedIdIsAlphanumerical) {
-            throw new UnauthorisedActionError("Updated User ID is not alphanumerical");
+            throw new UnauthorisedActionError("Updated User ID is not alphanumerical", "updated_user_id_not_alphanumerical");
         }
 
         this.updatedUserId = updatedUserId;
@@ -59,7 +59,7 @@ export default class UserInformationUpdateInput
         const firstNameHasLettersOnly = await this.userInformationUpdateInputValidator.firstNameHasLettersOnly(firstName);
         
         if (! firstNameHasLettersOnly) {
-            throw new UnauthorisedActionError("First name must be letters only");
+            throw new UnauthorisedActionError("First name must be letters only", "first_name_not_letters_only");
         }
 
         this.firstName = firstName;
@@ -77,7 +77,7 @@ export default class UserInformationUpdateInput
         const lastNameHasLettersOnly = await this.userInformationUpdateInputValidator.lastNameHasLettersOnly(lastName);
         
         if (! lastNameHasLettersOnly) {
-            throw new UnauthorisedActionError("Last name must be letters only");
+            throw new UnauthorisedActionError("Last name must be letters only", "last_name_not_letters_only");
         }
 
         this.lastName = lastName;

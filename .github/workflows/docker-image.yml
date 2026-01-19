@@ -2,9 +2,9 @@ name: Docker Compose CI
 
 on:
   push:
-    branches: [ "main", "feature/update-user-password" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "main", "feature/update-user-password" ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:

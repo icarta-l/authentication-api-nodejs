@@ -8,11 +8,13 @@ import UpdateUserInformationInputJoiValidation from "./validation/UpdateUserInfo
 import UpdateUserInformationRequest from "../UpdateUserInformationController/UpdateUserInformationRequest";
 import UpdateUserInformationController from "../UpdateUserInformationController/UpdateUserInformationController";
 import UpdateUserInformationResponse from "../UpdateUserInformationController/UpdateUserInformationResponse";
+import UpdateUserInformationTypeValidator from "./validation/UpdateUserInformationTypeValidator";
 
 import AuthenticationMiddleware from "../../../services/middleware/AuthenticationMiddleware";
 
 import BadRequestError from "../../../services/errors/BadRequestError";
 import UnauthorisedActionError from "../../../services/errors/UnauthorisedActionError";
+import TypeValidator from "../../../services/validation/TypeValidator";
 
 const UpdateUserInformationRouter: Router = express.Router();
 const jsonParser: NextHandleFunction = bodyParser.json();
@@ -42,10 +44,16 @@ UpdateUserInformationRouter.put("/", jsonParser, AuthenticationMiddleware, async
 
         if (error instanceof BadRequestError) {
             response.status(422)
-            .json(error.getMessage());
+            .json({
+                message: error.getMessage(),
+                code: error.getErrorCode()
+            });
         } else if(error instanceof UnauthorisedActionError) {
             response.status(403)
-            .json(error.getMessage());
+            .json({
+                message: error.getMessage(),
+                code: error.getErrorCode()
+            });
         } else if (error instanceof Error) {
             response.status(500)
             .json(error.message);
@@ -54,7 +62,8 @@ UpdateUserInformationRouter.put("/", jsonParser, AuthenticationMiddleware, async
 });
 
 const composeUpdateUserInformationRequest = (requestBody: any, userId: string): UpdateUserInformationRequest => {
-    const updateUserInformationRequest = new UpdateUserInformationRequest();
+    const updateUserInformationTypeValidator = new UpdateUserInformationTypeValidator(new TypeValidator());
+    const updateUserInformationRequest = new UpdateUserInformationRequest(updateUserInformationTypeValidator);
     updateUserInformationRequest.setUserId(userId)
     .setUpdatedUserId(requestBody.updatedUserId)
     .setFirstName(requestBody.firstName)

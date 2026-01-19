@@ -36,11 +36,11 @@ export default class UserRetrievalOutput
         const [usernameHasAtLeat3Letters, usernameHasOnlyLettersNumberAndUnderscores] = await Promise.all([this.userRetrievalOutputValidator.usernameHasAtLeat3Letters(username), this.userRetrievalOutputValidator.usernameHasOnlyLettersNumberAndUnderscores(username)]);
         
         if (! usernameHasAtLeat3Letters) {
-            throw new InvalidRetrievedValuesError("Retrieved username is not valid: username needs to have at least 3 letters");
+            throw new InvalidRetrievedValuesError("Retrieved username is not valid: username needs to have at least 3 letters", "username_does_not_have_enough_letters");
         }
 
         if (! usernameHasOnlyLettersNumberAndUnderscores) {
-            throw new InvalidRetrievedValuesError("Retrieved username is not valid: username can only contain letters, numbers and underscores");
+            throw new InvalidRetrievedValuesError("Retrieved username is not valid: username can only contain letters, numbers and underscores", "username_has_not_allowed_characters");
         }
 
         this.username = username;
@@ -58,7 +58,7 @@ export default class UserRetrievalOutput
         const emailIsValid = await this.userRetrievalOutputValidator.emailMustBeValid(email);
 
         if (! emailIsValid) {
-            throw new InvalidRetrievedValuesError("Retrieved email is not valid");
+            throw new InvalidRetrievedValuesError("Retrieved email is not valid", "retrieved_email_is_invalid");
         }
 
         this.email = email;
@@ -76,7 +76,7 @@ export default class UserRetrievalOutput
         const firstNameHasLettersOnly = await this.userRetrievalOutputValidator.firstNameHasLettersOnly(firstName);
 
         if (! firstNameHasLettersOnly) {
-            throw new InvalidRetrievedValuesError("Retrieved first name is not valid");
+            throw new InvalidRetrievedValuesError("Retrieved first name is not valid", "retrieved_first_name_is_invalid");
         }
 
         this.firstName = firstName;
@@ -94,7 +94,7 @@ export default class UserRetrievalOutput
         const lastNameHasLettersOnly = await this.userRetrievalOutputValidator.lastNameHasLettersOnly(lastName);
 
         if (! lastNameHasLettersOnly) {
-            throw new InvalidRetrievedValuesError("Retrieved last name is not valid");
+            throw new InvalidRetrievedValuesError("Retrieved last name is not valid", "retrieved_last_name_is_invalid");
         }
 
         this.lastName = lastName;

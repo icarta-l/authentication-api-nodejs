@@ -14,21 +14,7 @@ afterAll(async() => {
     await postgreSQLDatabase.close();
 });
 
-describe("POST to register route", () => {
-    test("should return a 201 HTTP response", async () => {
-        const response = await request(app)
-            .post(userEndpoint)
-            .send({
-                username: "UserTest",
-                email: "test@gmail.com",
-                password: "my Test pas SDF23sword1",
-                firstName: "Lorem",
-                lastName: "Ipsum"
-            });
-
-        expect(response.status).toEqual(201);
-    });
-
+describe("POST to register route to check for properties validation", () => {
     test("empty username field returns a 422 HTTP response", async () => {
         const response = await request(app)
             .post(userEndpoint)
@@ -69,20 +55,6 @@ describe("POST to register route", () => {
             });
 
         expect(response.status).toEqual(422);
-    });
-
-    test("without a first name or a last name should return a 201 HTTP response", async () => {
-        const response = await request(app)
-            .post(userEndpoint)
-            .send({
-                username: "UserTest2",
-                email: "test2@gmail.com",
-                password: "my Test pasSDF234 sword1",
-                firstName: "Lorem",
-                lastName: "Ipsum"
-            });
-        
-        expect(response.status).toEqual(201);
     });
 
     test("username without letters should return a 403 HTTP response", async () => {
@@ -190,20 +162,6 @@ describe("POST to register route", () => {
                 username: "SDSDFSDFSDFSDF",
                 email: "test3@gmail.com",
                 password: "SDfsdf sdfsFSDfs dfsfSd fSdf",
-                firstName: "Lorem",
-                lastName: "Ipsum"
-            });
-
-        expect(response.status).toEqual(403);
-    });
-
-    test("already used email address should return a 403 HTTP response", async () => {
-        const response = await request(app)
-            .post(userEndpoint)
-            .send({
-                username: "UserTest",
-                email: "test@gmail.com",
-                password: "my Test pas SDF23sword1",
                 firstName: "Lorem",
                 lastName: "Ipsum"
             });

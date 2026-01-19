@@ -20,7 +20,7 @@ export default class UserRetrievalInput
         const requestedIdIsAlphanumerical = await this.userRetrievalInputValidator.userIdIsValid(requestedUserId);
 
         if (!requestedIdIsAlphanumerical) {
-            throw new UnauthorisedActionError("User ID is not alphanumerical");
+            throw new UnauthorisedActionError("User ID is not alphanumerical", "user_id_not_alphanumerical");
         }
         
         this.requestedUserId = requestedUserId;

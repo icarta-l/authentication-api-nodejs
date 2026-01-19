@@ -2,13 +2,17 @@ import express from 'express';
 import type { Request, Response, Router } from 'express';
 import bodyParser from 'body-parser';
 import type { NextHandleFunction } from "connect";
+
 import UserRegistrationOnPostgreSQLDatabase from "./database/UserRegistrationOnPostgreSQLDatabase";
 import RegisterUserController from '../RegisterUserController/RegisterUserController';
 import RegisterUserRequest from '../RegisterUserController/RegisterUserRequest';
 import type RegisterUserResponse from '../RegisterUserController/RegisterUserResponse';
+import RegisterUserTypeValidator from './validation/RegisterUserTypeValidator';
+
 import BadRequestError from '../../../services/errors/BadRequestError';
 import UnauthorisedActionError from '../../../services/errors/UnauthorisedActionError';
 import RegisterUserJoiValidation from './validation/RegisterUserJoiValidation';
+import TypeValidator from '../../../services/validation/TypeValidator';
 
 const RegisterUserRouter: Router = express.Router();
 const jsonParser: NextHandleFunction = bodyParser.json();
@@ -39,10 +43,16 @@ RegisterUserRouter.post("/", jsonParser, async (request: Request, response: Resp
 
         if (error instanceof BadRequestError) {
             response.status(422)
-            .json(error.getMessage());
-        } else if(error instanceof UnauthorisedActionError) {
+            .json({
+                message: error.getMessage(),
+                code: error.getErrorCode()
+            });
+        } else if (error instanceof UnauthorisedActionError) {
             response.status(403)
-            .json(error.getMessage());
+            .json({
+                message: error.getMessage(),
+                code: error.getErrorCode()
+            });
         } else if (error instanceof Error) {
             response.status(500)
             .json(error.message);
@@ -51,13 +61,14 @@ RegisterUserRouter.post("/", jsonParser, async (request: Request, response: Resp
 });
 
 const composeRegisterUserRequest = (requestBody: any): RegisterUserRequest => {
-    const registerUserRequest = new RegisterUserRequest();
+    const registerUserTypeValidator = new RegisterUserTypeValidator(new TypeValidator());
+    const registerUserRequest = new RegisterUserRequest(registerUserTypeValidator);
 
     registerUserRequest.setEmail(requestBody.email)
     .setUsername(requestBody.username)
     .setPassword(requestBody.password);
 
-    if (requestBody.firstName !== undefined) {
+    if (typeof requestBody.firstName !== "undefined" && requestBody.firstName !== null) {
         registerUserRequest.setFirstName(requestBody.firstName)
         .setLastName(requestBody.lastName);
     }

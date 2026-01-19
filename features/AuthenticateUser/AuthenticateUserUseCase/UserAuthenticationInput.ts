@@ -21,7 +21,7 @@ export default class UserAuthenticationInput
         const emailIsValid = await this.userAuthenticationInputValidator.emailMustBeValid(email);
         
         if (!emailIsValid) {
-            throw new UnauthorisedActionError("Email must be valid");
+            throw new UnauthorisedActionError("Email must be valid", "email_is_invalid");
         }
 
         this.email = email;
