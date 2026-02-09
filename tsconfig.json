@@ -109,6 +109,8 @@
     "exclude": [
       "node_modules",
       "tests/*",
-      "features/*/tests/*"
+      "tests/typeValidation/*",
+      "features/*/*/tests/*",
+      "features/*/*/tests/typeValidation/*"
     ]
   }

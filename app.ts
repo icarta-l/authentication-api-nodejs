@@ -1,9 +1,9 @@
 import express, { Express } from 'express';
-import { RegisterUserRouter } from "./features/RegisterUser/RegisterUserMain/router";
-import { AuthenticateUserRouter } from './features/AuthenticateUser/AuthenticateUserMain/router';
-import { RetrieveUserRouter } from './features/RetrieveUser/RetrieveUserMain/router';
-import { UpdateUserInformationRouter } from './features/UpdateUserInformation/UpdateUserInformationMain/router';
-import { UpdateUserPasswordRouter } from './features/UpdateUserPassword/UpdateUserPasswordMain/router';
+import { RegisterUserRouter } from "./features/UserManagement/RegisterUser/RegisterUserMain/router";
+import { AuthenticateUserRouter } from './features/UserManagement/AuthenticateUser/AuthenticateUserMain/router';
+import { RetrieveUserRouter } from './features/UserManagement/RetrieveUser/RetrieveUserMain/router';
+import { UpdateUserInformationRouter } from './features/UserManagement/UpdateUserInformation/UpdateUserInformationMain/router';
+import { UpdateUserPasswordRouter } from './features/UserManagement/UpdateUserPassword/UpdateUserPasswordMain/router';
 
 const app: Express = express();
 

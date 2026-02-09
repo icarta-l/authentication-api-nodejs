@@ -6,5 +6,6 @@ FeatureAddingHandler.js
 features/*/*.js
 features/*/*/*.js
 features/*/*/*/*.js
+features/*/*/*/*/*.js
 services/*/*.js
 .env
