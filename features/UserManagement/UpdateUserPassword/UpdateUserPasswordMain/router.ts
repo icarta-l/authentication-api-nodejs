@@ -27,7 +27,8 @@ UpdateUserPasswordRouter.put("/password", jsonParser, AuthenticationMiddleware, 
 
         await userPasswordUpdateOnPostgreSQLDatabase.connect();
 
-        const updateUserPasswordRequest: UpdateUserPasswordRequest = composeUpdateUserPasswordRequest(request.body, request.params.userId);
+        const userId = Array.isArray(request.params.userId) ? request.params.userId[0] : request.params.userId;
+        const updateUserPasswordRequest: UpdateUserPasswordRequest = composeUpdateUserPasswordRequest(request.body, userId);
 
         const updateUserPasswordController: UpdateUserPasswordController = new UpdateUserPasswordController();
         const updateUserPasswordResponse: UpdateUserPasswordResponse = await updateUserPasswordController.handleUpdateUserPasswordRequest(updateUserPasswordRequest, userPasswordUpdateOnPostgreSQLDatabase, updateUserPasswordInputJoiValidation);

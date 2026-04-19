@@ -6,7 +6,7 @@
   "scripts": {
     "test-watch": "NODE_PATH=. jest --watchAll --no-cache --detectOpenHandles",
     "test": "NODE_PATH=. jest --no-cache --detectOpenHandles --forceExit",
-    "test-file": "NODE_PATH=. jest --no-cache --detectOpenHandles --forceExit ./tests/RetrieveUser/typeValidation/retrieveUserLogicRequestedUserIdTypeValidationIntegration.test.ts",
+    "test-file": "NODE_PATH=. jest --no-cache --detectOpenHandles --forceExit ./features/UserManagement/UpdateUserPassword/tests/updateUserPasswordLogic.test.ts",
     "start": "nodemon server.js",
     "start:test": "node server.js",
     "typescript": "tsc"

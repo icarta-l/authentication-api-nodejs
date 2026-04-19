@@ -27,7 +27,8 @@ UpdateUserInformationRouter.put("/", jsonParser, AuthenticationMiddleware, async
 
         await userInformationUpdateOnPostgreSQLDatabase.connect();
 
-        const updateUserInformationRequest = composeUpdateUserInformationRequest(request.body, request.params.userId);
+        const userId = Array.isArray(request.params.userId) ? request.params.userId[0] : request.params.userId;
+        const updateUserInformationRequest = composeUpdateUserInformationRequest(request.body, userId);
 
         const updateUserInformationController: UpdateUserInformationController = new UpdateUserInformationController();
         const updateUserInformationResponse: UpdateUserInformationResponse = await updateUserInformationController.handleUpdateUserInformationRequest(updateUserInformationRequest, userInformationUpdateOnPostgreSQLDatabase, updateUserInformationInputJoiValidation);
